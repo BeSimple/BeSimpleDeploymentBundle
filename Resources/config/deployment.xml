@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://www.symfony-project.org/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.symfony-project.org/schema/dic/services http://www.symfony-project.org/schema/dic/services/services-1.0.xsd">
+    <parameters>
+    
+		<parameter key="deployment.class">Bundle\DeploymentBundle\Service\Deployment</parameter>
+		
+		<parameter key="deployment.servers.default.type">ftp</parameter>
+		
+		<parameter key="deployment.servers.default.connection" type="collection">
+			<parameter key="host">localhost</parameter>
+			<parameter key="login"></parameter>
+			<parameter key="password"></parameter>
+			<parameter key="path"></parameter>
+		</parameter>
+		
+		<parameter key="deployment.servers.default.rules" type="collection">
+		</parameter>
+		
+		<parameter key="deployment.rule.git" type="collection">
+			<parameter key="ignore">.git,.gitignore,.gitmodules</parameter>
+		</parameter>
+		
+		<parameter key="deployment.rule.svn" type="collection">
+			<parameter key="ignore">.svn</parameter>
+		</parameter>
+		
+		<parameter key="deployment.config.class">Bundle\DeploymentBundle\Service\Config</parameter>
+		<parameter key="deployment.scheduler.class">Bundle\DeploymentBundle\Service\Scheduler</parameter>
+		<parameter key="deployment.logger.class">Bundle\DeploymentBundle\Service\Logger</parameter>
+	
+	</parameters>
+    <services>
+		
+		<service id="deployment.config" class="%deployment.config.class%">
+            <argument type="service" id="service_container" />
+        </service>
+		
+		<service id="deployment.logger" class="%deployment.logger.class%">
+            <argument type="service" id="service_container" />
+        </service>
+		
+		<service id="deployment" class="%deployment.class%">
+            <argument type="service" id="deployment.config" />
+			<argument type="service" id="deployment.logger" />
+        </service>
+		
+	</services>
+</container>
