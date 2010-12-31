@@ -11,7 +11,7 @@
 		
 		<parameter key="deployment.servers.default.connection" type="collection">
 			<parameter key="host">localhost</parameter>
-			<parameter key="login"></parameter>
+			<parameter key="username"></parameter>
 			<parameter key="password"></parameter>
 			<parameter key="path"></parameter>
 		</parameter>

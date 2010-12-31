@@ -33,7 +33,23 @@ How to configure
 ----------------
 
 
+Here is the full example in the YAML format :
 
+    deployment.rules:
+        versioning: { ignore: [.git, .gitmodules, .gitignor, .svn] }
+        symfony: { ignore: [/app/logs, /app/cache, /web/uploads] }
+
+    deployment.servers:
+        staging:
+            type:     rsync
+            host:     localhost
+            username: login
+            password: passwd
+            path:     /path/to/project
+            rules:    [versioning, symfony]
+        production:
+            type:     ftp
+            // ...
 
 
 How to use
@@ -57,7 +73,7 @@ go into your project root folder and type the following commands :
 ###Using the service
 
 You can also use the deployment feature within your controller
-by invoking 'deployment' the service :
+by invoking the 'deployment' service :
 
 **1. Test your deployment :**
 
