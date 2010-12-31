@@ -22,8 +22,8 @@ class Config
 
     public function getDeployer($server)
     {
-        $type = strtolower((string) $this->getType($server));
-        $connection = $this->getConnection($server);
+        $type = strtolower((string) $this->getParameter($server, 'type'));
+        $connection = $this->getParameter($server, 'connection');
 
         switch($type) {
             case 'rsync': return new RsyncDeployer($connection);
@@ -32,23 +32,50 @@ class Config
         }
     }
 
-
-
     public function getScheduler($server)
     {
-        $parameters = $this->getParameters($server);
-        $rules = $this->getRules();
+        $scheduler = new Scheduler();
+
+        try {
+            $scheduler->addRule('ignore', $this->getParameter($server, 'ignore'));
+        }
+        catch(\InvalidArgumentException $e) {}
+
+        try {
+            $templates = $this->getParameter($server, 'rules');
+
+            foreach($templates as $template) {
+                try{
+                    $template = $this->getRuleTemplate($template);
+                    $scheduler->addRules($template);
+                }
+                catch(\InvalidArgumentException $e) {}
+            }
+        }
+        catch(\InvalidArgumentException $e) {}
+
+        return $scheduler;
     }
 
-    protected function getParameters($server)
+    protected function getRuleTemplate($name)
     {
-        if(! $this->container->hasParameter('deployment.server.'.$server)) {
+        $key = 'deployment.rule.'.$name;
+
+        if(! $this->container->hasParameter($key)) {
+            throw new \InvalidArgumentException('Unknown rule template "'.$name.'"');
+        }
+
+        return $this->container->getParameter($key);
+    }
+
+    protected function getParameter($server, $parameter)
+    {
+        $key = 'deployment.server.'.$server.'.'.$parameter;
+
+        if(! $this->container->hasParameter($key)) {
             throw new \InvalidArgumentException('Unknown server name "'.$server.'"');
         }
 
-        return array_merge(
-            $this->container->getParameter('deployment.servers.defaults'),
-            $this->container->getParameter('deployment.server.'.$server)
-        );
+        return $this->container->getParameter($key);
     }
 }

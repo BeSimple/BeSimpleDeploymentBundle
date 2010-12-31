@@ -19,13 +19,13 @@
 		<parameter key="deployment.servers.default.rules" type="collection">
 		</parameter>
 		
-		<parameter key="deployment.rule.git" type="collection">
-			<parameter key="ignore">.git,.gitignore,.gitmodules</parameter>
+		<parameter key="deployment.rule.versioning" type="collection">
+			<parameter key="ignore">.git, .git*, .svn</parameter>
 		</parameter>
 		
-		<parameter key="deployment.rule.svn" type="collection">
-			<parameter key="ignore">.svn</parameter>
-		</parameter>
+		<parameter key="deployment.rule.eclipse" type="collection">
+            <parameter key="ignore">.settings, .builpath, .project</parameter>
+        </parameter>
 		
 		<parameter key="deployment.config.class">Bundle\DeploymentBundle\Service\Config</parameter>
 		<parameter key="deployment.scheduler.class">Bundle\DeploymentBundle\Service\Scheduler</parameter>

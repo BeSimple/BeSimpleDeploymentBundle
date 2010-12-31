@@ -36,7 +36,8 @@ How to configure
 Here is the full example in the YAML format :
 
     deployment.rules:
-        versioning: { ignore: [.git, .gitmodules, .gitignore, .svn] }
+        eclipse: { ignore: .settings, .buildpath, .project }
+        versioning: { ignore: [.git, .git*, .svn] }
         symfony: { ignore: [/app/logs, /app/cache, /web/uploads] }
 
     deployment.servers:
@@ -46,7 +47,8 @@ Here is the full example in the YAML format :
             username: login
             password: passwd
             path:     /path/to/project
-            rules:    [versioning, symfony]
+            rules:    [eclipse, symfony]
+            ignore:   [/bin/*]
         production:
             type:     ftp
             // ...
@@ -76,5 +78,5 @@ by invoking the 'deployment' service :
     // Test your deployment :
     $this->get('deployment')->test([$server]);
     
-    // 2. Launch your deployment :
+    // Launch your deployment :
     $this->get('deployment')->launch([$server]);
