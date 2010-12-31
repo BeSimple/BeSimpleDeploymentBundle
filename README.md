@@ -36,7 +36,7 @@ How to configure
 Here is the full example in the YAML format :
 
     deployment.rules:
-        versioning: { ignore: [.git, .gitmodules, .gitignor, .svn] }
+        versioning: { ignore: [.git, .gitmodules, .gitignore, .svn] }
         symfony: { ignore: [/app/logs, /app/cache, /web/uploads] }
 
     deployment.servers:
@@ -61,12 +61,10 @@ How to use
 The simpliest way to deploy your application is to use the command line,
 go into your project root folder and type the following commands :
 
-**1. Test your deployment :**
-
+    # Test your deployment :
     php app/console deployment:test [server]
     
-**2. Launch your deployment :**
-
+    # Launch your deployment :
     php app/console deployment:launch [server]
     
     
@@ -75,10 +73,8 @@ go into your project root folder and type the following commands :
 You can also use the deployment feature within your controller
 by invoking the 'deployment' service :
 
-**1. Test your deployment :**
-
+    // Test your deployment :
     $this->get('deployment')->test([$server]);
     
-**2. Launch your deployment :**
-
+    // 2. Launch your deployment :
     $this->get('deployment')->launch([$server]);
