@@ -4,32 +4,38 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.symfony-project.org/schema/dic/services http://www.symfony-project.org/schema/dic/services/services-1.0.xsd">
     <parameters>
-    
+    	
+		<!-- classes -->
 		<parameter key="deployment.class">Bundle\DeploymentBundle\Service\Deployment</parameter>
+		<parameter key="deployment.config.class">Bundle\DeploymentBundle\Service\Config</parameter>
+        <parameter key="deployment.scheduler.class">Bundle\DeploymentBundle\Service\Scheduler</parameter>
+        <parameter key="deployment.logger.class">Bundle\DeploymentBundle\Service\Logger</parameter>
 		
-		<parameter key="deployment.servers.default.type">ftp</parameter>
-		
-		<parameter key="deployment.servers.default.connection" type="collection">
-			<parameter key="host">localhost</parameter>
+		<!-- defaults -->
+		<parameter key="deployment.defaults" type="collection">
+			<parameter key="type">rsync</parameter>
 			<parameter key="username"></parameter>
 			<parameter key="password"></parameter>
+			<parameter key="host"></parameter>
 			<parameter key="path"></parameter>
 		</parameter>
 		
-		<parameter key="deployment.servers.default.rules" type="collection">
-		</parameter>
-		
-		<parameter key="deployment.rule.versioning" type="collection">
-			<parameter key="ignore">.git, .git*, .svn</parameter>
-		</parameter>
-		
-		<parameter key="deployment.rule.eclipse" type="collection">
-            <parameter key="ignore">.settings, .builpath, .project</parameter>
-        </parameter>
-		
-		<parameter key="deployment.config.class">Bundle\DeploymentBundle\Service\Config</parameter>
-		<parameter key="deployment.scheduler.class">Bundle\DeploymentBundle\Service\Scheduler</parameter>
-		<parameter key="deployment.logger.class">Bundle\DeploymentBundle\Service\Logger</parameter>
+		<!-- rules -->
+		<parameter key="deployment.rules" type="collection">
+			<parameter key="symfony" type="collection">
+				<parameter key="ignore">/app/logs, /app/cache, /web/uploads, /web/*_dev.php</parameter>
+				<parameter key="commands" type="collection">
+					<parameter key="0">deployment:clearcache</parameter>
+					<parameter key="1">deployment:fixperms</parameter>
+				</parameter>
+			</parameter>
+			<parameter key="versioning" type="collection">
+				<parameter key="ignore">.git, .git*, .svn</parameter>
+			</parameter>
+			<parameter key="eclipse" type="collection">
+	            <parameter key="ignore">.settings, .builpath, .project</parameter>
+	        </parameter>
+	   </parameter>
 	
 	</parameters>
     <services>

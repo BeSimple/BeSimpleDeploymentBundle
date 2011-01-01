@@ -11,17 +11,17 @@ class Scheduler
         $this->rules = array();
     }
 
-    public function addRule($rule, $values)
+    public function addRule($name, $values)
     {
-        if(! isset($this->rules[$rule])) {
-            $this->rules[$rule] = array();
+        if(! isset($this->rules[$name])) {
+            $this->rules[$name] = array();
         }
 
         if(! is_array($values)) {
             $values = array($values);
         }
 
-        $this->rules[$rule] = array_merge($this->rules[$rule], $values);
+        $this->rules[$name] = array_merge($this->rules[$name], $values);
     }
 
     public function addRules(array $rules)
@@ -31,12 +31,29 @@ class Scheduler
         }
     }
 
-    public function getRule($name)
+    public function getIgnore()
     {
-        if(isset($this->rules[$name])) {
-            return $this->rules[$name];
+        return $this->getParameter('ignore');
+    }
+
+    public function getForce()
+    {
+        return $this->getParameter('force');
+    }
+
+    public function getCommands()
+    {
+        return $this->getParameter('commands');
+    }
+
+    protected function getParameter($parameter)
+    {
+        $values = array();
+
+        foreach($this->rules as $rule) {
+            $values = array_merge($values, $rule[$parameter]);
         }
 
-        return null;
+        return array_unique($values);
     }
 }

@@ -17,13 +17,28 @@ class Config
 
     public function getServers()
     {
-        return $this->container->getParameter('deployment.servers.list');
+        return array_keys($this->container->getParameter('deployment.servers'));
+    }
+
+    public function getType($server)
+    {
+        $config = $this->getConfig($server);
+        $default = $this->container->getParameter('deployment.defaults');
+
+        return strtolower(isset($config['type']) ? $config['type'] : $default['type']);
     }
 
     public function getDeployer($server)
     {
-        $type = strtolower((string) $this->getParameter($server, 'type'));
-        $connection = $this->getParameter($server, 'connection');
+        $config = $this->getConfig($server);
+        $default = $this->container->getParameter('deployment.defaults');
+
+        $type = strtolower(isset($config['type']) ? $config['type'] : $default['type']);
+        $connection = array();
+
+        foreach(self::getConnectionParameters() as $parameter) {
+            $connection[$parameter] = isset($config['connection'][$parameter]) ? $config['connection'][$parameter] : $default[$parameter];
+        }
 
         switch($type) {
             case 'rsync': return new RsyncDeployer($connection);
@@ -34,48 +49,32 @@ class Config
 
     public function getScheduler($server)
     {
+        $templates = $this->container->getParameter('deployment.rules');
+        $config = $this->getConfig($server);
         $scheduler = new Scheduler();
 
-        try {
-            $scheduler->addRule('ignore', $this->getParameter($server, 'ignore'));
+        foreach($config['rules'] as $name) {
+            $scheduler->addRule($name, $templates[$name]);
         }
-        catch(\InvalidArgumentException $e) {}
 
-        try {
-            $templates = $this->getParameter($server, 'rules');
-
-            foreach($templates as $template) {
-                try{
-                    $template = $this->getRuleTemplate($template);
-                    $scheduler->addRules($template);
-                }
-                catch(\InvalidArgumentException $e) {}
-            }
-        }
-        catch(\InvalidArgumentException $e) {}
+        $scheduler->addRule('_', $config['rule']);
 
         return $scheduler;
     }
 
-    protected function getRuleTemplate($name)
+    public static function getConnectionParameters()
     {
-        $key = 'deployment.rule.'.$name;
-
-        if(! $this->container->hasParameter($key)) {
-            throw new \InvalidArgumentException('Unknown rule template "'.$name.'"');
-        }
-
-        return $this->container->getParameter($key);
+        return array('host', 'username', 'password', 'path');
     }
 
-    protected function getParameter($server, $parameter)
+    public static function getRuleParameters()
     {
-        $key = 'deployment.server.'.$server.'.'.$parameter;
+        return array('ignore', 'force', 'commands');
+    }
 
-        if(! $this->container->hasParameter($key)) {
-            throw new \InvalidArgumentException('Unknown server name "'.$server.'"');
-        }
-
-        return $this->container->getParameter($key);
+    protected function getConfig($server)
+    {
+        $servers = $this->container->getParameter('deployment.servers');
+        return $servers[$server];
     }
 }

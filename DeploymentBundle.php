@@ -2,8 +2,8 @@
 
 namespace Bundle\DeployBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle as BaseBundle;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class DeploymentBundle extends BaseBundle
+class DeploymentBundle extends Bundle
 {
 }

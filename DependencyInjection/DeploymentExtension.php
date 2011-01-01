@@ -5,6 +5,7 @@ namespace Bundle\DeploymentBundle\DependencyInjection;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Bundle\DeploymentBundle\Service\Config;
 
 class DeploymentExtension extends Extension
 {
@@ -16,25 +17,41 @@ class DeploymentExtension extends Extension
             $loader->load('deployment.xml');
         }
 
-        $defaultType = $container->getParameter('deployment.servers.default.type');
-        $defaultConnection = $container->getParameter('deployment.servers.default.connexion');
+        $servers = array();
 
-        foreach($config as $server => $config) {
-            $container->setParameter('deployment.servers.'.$server.'.type', isset($config['type']) ? $config['type'] : $defaultType);
-            $container->setParameter('deployment.server.'.$server.'.connection', array_merge($defaultConnection, $connection));
-            $container->setParameter('deployment.server.'.$server.'.connection', $config['rules']);
+        foreach($config as $name => $server) {
+            $servers[$name] = array(
+                'type' => (isset($server['type']) && is_string($server['type'])) ? $server['type'] : null,
+                'rules' => (isset($server['rules']) && is_array($server['rules'])) ? $server['rules'] : null,
+                'rule' => array(),
+                'connection' => array(),
+            );
+
+            foreach(Config::getConnectionParameters() as $parameter) {
+                $servers[$name]['connection'][$parameter] = $server[$parameter];
+            }
+
+            foreach(Config::getRuleParameters() as $parameter) {
+                $servers[$name]['rule'][$parameter] = $server[$parameter];
+            }
         }
 
-        $container->setParameter('deployment.servers.list', array_keys($config));
+        $container->setParameter('deployment.servers', $servers);
     }
 
     public function rulesLoad($config, ContainerBuilder $container)
     {
-        foreach($config as $rule => $config) {
-            $container->setParameter('deployment.rule.'.$rule, $config);
+        $rules = array();
+
+        foreach($container->getParameter('deployment.rules') as $name => $rule) {
+            $rules[$name] = array(
+                'ignore' => isset($rule['ignore']) ? $this->stringToArray($rule['ignore']) : array(),
+                'force' => isset($rule['force']) ? $this->stringToArray($rule['force']) : array(),
+                'commands' => isset($rule['commands']) ? $rule['commands'] : array(),
+            );
         }
 
-        $container->setParameter('deployment.rules.list', array_keys($config));
+        $container->setParameter('deployment.rules', $rules);
     }
 
     public function getXsdValidationBasePath()
@@ -52,4 +69,14 @@ class DeploymentExtension extends Extension
         return 'deployment';
     }
 
+    protected function stringToArray($string)
+    {
+        $array = array();
+
+        foreach(explode(',', $string) as $bit) {
+            $array[] = trim($bit);
+        }
+
+        return $array;
+    }
 }
