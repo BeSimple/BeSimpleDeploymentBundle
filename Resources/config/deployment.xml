@@ -5,52 +5,42 @@
     xsi:schemaLocation="http://www.symfony-project.org/schema/dic/services http://www.symfony-project.org/schema/dic/services/services-1.0.xsd">
     <parameters>
     	
-		<!-- classes -->
-		<parameter key="deployment.class">Bundle\DeploymentBundle\Service\Deployment</parameter>
-		<parameter key="deployment.config.class">Bundle\DeploymentBundle\Service\Config</parameter>
-        <parameter key="deployment.scheduler.class">Bundle\DeploymentBundle\Service\Scheduler</parameter>
-        <parameter key="deployment.logger.class">Bundle\DeploymentBundle\Service\Logger</parameter>
-		
-		<!-- defaults -->
-		<parameter key="deployment.defaults" type="collection">
-			<parameter key="type">rsync</parameter>
-			<parameter key="username"></parameter>
-			<parameter key="password"></parameter>
-			<parameter key="host"></parameter>
-			<parameter key="path"></parameter>
-		</parameter>
-		
-		<!-- rules -->
-		<parameter key="deployment.rules" type="collection">
-			<parameter key="symfony" type="collection">
-				<parameter key="ignore">/app/logs, /app/cache, /web/uploads, /web/*_dev.php</parameter>
-				<parameter key="commands" type="collection">
-					<parameter key="0">deployment:clearcache</parameter>
-					<parameter key="1">deployment:fixperms</parameter>
-				</parameter>
-			</parameter>
-			<parameter key="versioning" type="collection">
-				<parameter key="ignore">.git, .git*, .svn</parameter>
-			</parameter>
-			<parameter key="eclipse" type="collection">
-	            <parameter key="ignore">.settings, .builpath, .project</parameter>
-	        </parameter>
-	   </parameter>
+    	<parameter key="besimple_deployment.rsync.class">BeSimple\DeploymentBundle\Deployer\Rsync</parameter>
+    	<parameter key="besimple_deployment.ssh.class">BeSimple\DeploymentBundle\Deployer\Ssh</parameter>
+		<parameter key="besimple_deployment.config.class">BeSimple\DeploymentBundle\Deployer\Config</parameter>
+        <parameter key="besimple_deployment.logger.class">BeSimple\DeploymentBundle\Deployer\Logger</parameter>
+		<parameter key="besimple_deployment.deployer.class">BeSimple\DeploymentBundle\Deployer\Deployer</parameter>
 	
 	</parameters>
     <services>
 		
-		<service id="deployment.config" class="%deployment.config.class%">
-            <argument type="service" id="service_container" />
+		<service id="besimple_deployment.rsync" class="%besimple_deployment.rsync.class%">
+            <argument type="service" id="besimple_deployment.logger" />
+            <argument type="service" id="event_dispatcher" />
+            <argument>%besimple_deployment.config.rsync%</argument>
+        </service>
+        
+        <service id="besimple_deployment.ssh" class="%besimple_deployment.ssh.class%">
+            <argument type="service" id="besimple_deployment.logger" />
+            <argument type="service" id="event_dispatcher" />
+            <argument>%besimple_deployment.config.ssh%</argument>
         </service>
 		
-		<service id="deployment.logger" class="%deployment.logger.class%">
-            <argument type="service" id="service_container" />
+		<service id="besimple_deployment.config" class="%besimple_deployment.config.class%">
+            <argument>%besimple_deployment.config.rules%</argument>
+            <argument>%besimple_deployment.config.commands%</argument>
+            <argument>%besimple_deployment.config.servers%</argument>
         </service>
 		
-		<service id="deployment" class="%deployment.class%">
-            <argument type="service" id="deployment.config" />
-			<argument type="service" id="deployment.logger" />
+		<service id="besimple_deployment.logger" class="%besimple_deployment.logger.class%">
+            <argument type="service" id="logger" on-invalid="null" />
+            <argument type="service" id="event_dispatcher" />
+        </service>
+        
+		<service id="besimple_deployment.deployer" class="%besimple_deployment.deployer.class%">
+		    <argument type="service" id="besimple_deployment.rsync" />
+            <argument type="service" id="besimple_deployment.config" />
+			<argument type="service" id="event_dispatcher" />
         </service>
 		
 	</services>

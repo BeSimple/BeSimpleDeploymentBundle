@@ -2,26 +2,60 @@
 
 namespace Bundle\DeploymentBundle\Deployer;
 
-use Bundle\DeploymentBundle\Service\Scheduler;
+use Symfony\Bundle\FrameworkBundle\EventDispatcher;
 
-abstract class Deployer
+class Deployer
 {
-    protected $connection;
+    protected $rsync;
+    protected $ssh;
+    protected $config;
+    protected $eventDispatcher;
 
-    public function __construct(array $connection)
+    public function __construct(Rsync $rsync, Ssh $ssh, Config $config, EventDispatcher $eventDispatcher)
     {
-        $this->connection = $connection;
+        $this->rsync = $rsync;
+        $this->ssh = $ssh;
+        $this->config = $config;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
-    protected function executeCommands(Scheduler $scheduler)
+    public function launch($server = null)
     {
-        foreach($scheduler->getCommands() as $command) {
-            // TODO: execute command
+        return $this->call($server, true);
+    }
+
+    public function test($server = null)
+    {
+        return $this->call($server, false);
+    }
+
+    protected function call($server = null, $real = false)
+    {
+        if(is_null($server)) {
+            foreach($this->config->getServerNames() as $server) {
+                $this->call($method, $server);
+            }
+
+            return;
         }
+
+        $this->dispatchEvent('start', array('server' => $server, 'real' => $real));
+
+        try {
+            $config = $this->config->getServerConfig($server);
+            $rsync = $this->rsync->run($config['connection'], $config['rules'], $real);
+            $ssh = $this->ssh->run($config['connection'], $config['commands'], $real);
+        }
+
+        catch(\Exception $e) {
+            $this->dispatchEvent('error', array('server' => $server, 'method' => $method, 'exception' => $e));
+        }
+
+        $this->dispatchEvent('success', array('server' => $server, 'real' => $real, 'rsync' => $rsync, 'ssh' => $ssh));
     }
 
-    protected function getFiles(Scheduler $scheduler)
+    protected function dispatchEvent($name, array $parameters)
     {
-        // TODO: list files
+        $this->eventDispatcher->notify(new Event($this, 'besimple_deployment.'.$name, $parameters));
     }
 }
