@@ -13,12 +13,10 @@ class Logger
     const INFO  = 'info';
 
     protected $logger;
-    protected $eventDispatcher;
 
-    public function __construct($logger, EventDispatcher $eventDispatcher)
+    public function __construct($logger)
     {
         $this->logger = $logger;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function logDeployment($type, $server, $count)
@@ -36,11 +34,5 @@ class Logger
         if ($this->logger instanceof LoggerInterface) {
             $this->logger->$type($message);
         }
-
-        $this->eventDispatcher->notify(new Event(
-            $this,
-            'besimple_deployment.log',
-            array('type' => $type, 'message' => $message)
-        ));
     }
 }

@@ -34,7 +34,6 @@
 		
 		<service id="besimple_deployment.logger" class="%besimple_deployment.logger.class%">
             <argument type="service" id="logger" on-invalid="null" />
-            <argument type="service" id="event_dispatcher" />
         </service>
         
 		<service id="besimple_deployment.deployer" class="%besimple_deployment.deployer.class%">

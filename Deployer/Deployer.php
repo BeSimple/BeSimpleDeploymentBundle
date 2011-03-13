@@ -33,7 +33,7 @@ class Deployer
     {
         if(is_null($server)) {
             foreach($this->config->getServerNames() as $server) {
-                $this->call($method, $server);
+                $this->call($server, $real);
             }
 
             return;

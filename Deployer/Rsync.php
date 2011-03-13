@@ -51,7 +51,8 @@ class Rsync
             throw new \InvalidArgumentException(sprintf('Invalid "root" option : "%s" is not a valid path', $this->config['root']));
         }
 
-        $process = new Process($this->buildCommand($connection, $rules, $real), $root);
+        $command = $this->buildCommand($connection, $rules, $real);
+        $process = new Process($commant, $root);
 
         $this->stderr = array();
         $this->stdout = array();

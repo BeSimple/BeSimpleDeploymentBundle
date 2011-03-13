@@ -30,7 +30,7 @@ class Configuration
     {
         $node
             ->arrayNode('rsync')
-                ->scalarNode('command')->defaultValue('rsync')->isRequired()->cannotBeEmpty()->end()
+                ->scalarNode('command')->defaultValue('rsync')->cannotBeEmpty()->end()
                 ->booleanNode('delete')->defaultFalse()->end()
                 ->scalarNode('options')->defaultValue('-Cva')->end()
                 ->scalarNode('root')->defaultValue('%kernel.root_dir%/..')->isRequired()->cannotBeEmpty()->end()
@@ -66,7 +66,7 @@ class Configuration
     {
         $node
             ->arrayNode('commands')
-                ->scalarNode('command')->defaultValue('./app/console')->isRequired()->cannotBeEmpty()->end()
+                ->scalarNode('command')->defaultValue('./app/console')->cannotBeEmpty()->end()
                 ->useAttributeAsKey('name')
                 ->prototype('array')
                     ->arrayNode('type')->defaultValue('symfony')->end()
@@ -85,7 +85,7 @@ class Configuration
                 ->prototype('array')
                     ->scalarNode('host')->defaultValue('localhost')->end()
                     ->scalarNode('rsync_port')->defaultNull()->end()
-                    ->scalarNode('ssh_port')->defaultNull()->end()
+                    ->scalarNode('ssh_port')->defaultValue(22)->cannotBeEmpty()->end()
                     ->scalarNode('username')->defaultNull()->end()
                     ->scalarNode('password')->defaultNull()->end()
                     ->scalarNode('path')->isRequired()->cannotBeEmpty()->end()

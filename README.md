@@ -20,11 +20,11 @@ Use the submodule git command if your project is under git control, if not, just
 
 -  For stable release:
 
-    git submodule add git://github.com/BeSimple/DeploymentBundle.git src/BeSimple/DeploymentBundle
+    git submodule add git://github.com/BeSimple/DeploymentBundle.git vendor/bundles/BeSimple/DeploymentBundle
     
 -  For nightly build:
 
-    git submodule add git://github.com/jfsimon/DeploymentBundle.git src/BeSimple/DeploymentBundle
+    git submodule add git://github.com/jfsimon/DeploymentBundle.git vendor/bundles/BeSimple/DeploymentBundle
 
 
 ###Add it to your application
@@ -109,7 +109,11 @@ To be continued.
 
 Here is the full list of parameters :
 
--  host / rsync_port / ssh_port / username / password : rsync & ssh login informations
+-  host : 
+-  rsync_port :
+-  ssh_port :
+-  username
+-  password : 
 -  path : the path for your application root on the remote server
 -  rules : list of rules templates to apply
 -  commands : list of commands to trigger on destination server
@@ -141,3 +145,19 @@ by invoking the 'deployment' service :
     
     // Launch your deployment :
     $this->get('besimple_deployment')->launch([$server]);
+    
+
+###Events
+
+-  besimple_deployment.start
+-  besimple_deployment.success
+-  besimple_deployment.error
+-  besimple_deployment.rsync
+
+
+###SSH events
+
+-  besimple_deployment.ssh.start
+-  besimple_deployment.ssh.success
+-  besimple_deployment.ssh.error
+-  besimple_deployment.ssh.rsync
