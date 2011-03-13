@@ -66,7 +66,7 @@ class Configuration
     {
         $node
             ->arrayNode('commands')
-                ->scalarNode('command')->defaultValue('./app/console')->cannotBeEmpty()->end()
+                ->scalarNode('symfony_command')->defaultValue('./app/console')->cannotBeEmpty()->end()
                 ->useAttributeAsKey('name')
                 ->prototype('array')
                     ->arrayNode('type')->defaultValue('symfony')->end()

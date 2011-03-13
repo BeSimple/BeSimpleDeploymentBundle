@@ -19,7 +19,7 @@ A few words
 
 ###Links
 
--  Stable releases : [https://github.com/besimple/DeploymentBundle](https://github.com/besimple/DeploymentBundle)
+-  Stable releases : [https://github.com/BeSimple/DeploymentBundle](https://github.com/BeSimple/DeploymentBundle)
 -  Nightly builds : [https://github.com/jfsimon/DeploymentBundle](https://github.com/jfsimon/DeploymentBundle)
 -  Rest documentation : *will come later*
 
@@ -35,8 +35,48 @@ How to install
 
 
 1.  Get the sources via GIT
+
+    - Use clone method if not using GIT for your project
+
+        git clone git://github.com/BeSimple/DeploymentBundle.git vendor/BeSimple/DeploymentBundle
+        
+    - Use submodule method if this is the case
+    
+        git submodule add git://github.com/BeSimple/DeploymentBundle.git vendor/BeSimple/DeploymentBundle
+
+
 2.  Register bundle in `AppKernel` class
+
+        // app/AppKernel.php
+        
+        $bundles = array(
+            // ...
+            new BeSimple\DeploymentBundle\BeSimpleDeploymentBundle(),
+            // ...
+        );
+        
+
 3.  Add `besimple_deployment` entry to your config file
+
+        # app/config.yml
+        
+        besimple_deployment:
+            rsync:    ~
+            ssh:      ~
+            rules:    ~
+            commands: ~
+            servers:  ~
+
+
+4.  Add `BeSimple` namespace to autoload
+    
+        // app/autoload.php
+        
+        $loader->registerNamespaces(array(
+            // ...
+            'BeSimple' => __DIR__.'/../vendor',
+            // ...
+        ));
     
 
 How to configure
@@ -49,6 +89,11 @@ How to configure
     
         rsync:
             delete:       true
+            
+        ssh:
+            pubkey_file:  /home/me/.ssh/id_rsa.pub
+            privkey_file: /home/me/.ssh/id_rsa
+            passwphrase:  secret
     
         rules:
             eclipse:
@@ -144,8 +189,7 @@ by invoking the 'deployment' service :
 You can connect many events to know what's happening.
     
 
-Rsync events
-------------
+###Rsync events
 
 Subject of these events is the `besimple.rsync` service.
 
@@ -172,8 +216,7 @@ Subject of these events is the `besimple.rsync` service.
 -  line: The text line
 
 
-SSH events
-----------
+###SSH events
 
 Subject of these events is the `besimple.ssh` service
 
