@@ -5,6 +5,10 @@ Symfony2 applications deployment made easy
 **Untested bundle, watchout (maybe full of typos)**
 
 
+A few words
+-----------
+
+
 ###Description
 
 -  Deploy your project usinc rsync (must be installed) in ssh mode.
@@ -140,7 +144,8 @@ by invoking the 'deployment' service :
 You can connect many events to know what's happening.
     
 
-###Rsync events
+Rsync events
+------------
 
 Subject of these events is the `besimple.rsync` service.
 
@@ -175,7 +180,8 @@ Fired on each rsync `stdout` or `stderr` line. Come with the following parameter
 -  line: The text line
 
 
-###SSH events
+SSH events
+----------
 
 Subject of these events is the `besimple.ssh` service
 
