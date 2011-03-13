@@ -150,31 +150,23 @@ Rsync events
 Subject of these events is the `besimple.rsync` service.
 
 
-**besimple_deployment.rsync.start**
-
-Fired when rsync is started. Come with the following parameters:
+**besimple_deployment.rsync.start**: fired when rsync is started. Come with the following parameters:
 
 -  command: The command line
 
 
-**besimple_deployment.rsync.success**
- 
-Fired on rsync success. Come with the following parameters:
+**besimple_deployment.rsync.success**: fired on rsync success. Come with the following parameters:
 
 -  lines: The `stdout` lines as array
 
 
-**besimple_deployment.rsync.error**
-
-Fired when rsync enconter an error. Come with the following parameters:
+**besimple_deployment.rsync.error**: fired when rsync enconter an error. Come with the following parameters:
 
 -  code: The error code
 -  message: The error message
 
 
-**besimple_deployment.rsync.line**
-
-Fired on each rsync `stdout` or `stderr` line. Come with the following parameters:
+**besimple_deployment.rsync.line**: fired on each rsync `stdout` or `stderr` line. Come with the following parameters:
 
 -  type: `out` or `err`
 -  line: The text line
@@ -186,31 +178,23 @@ SSH events
 Subject of these events is the `besimple.ssh` service
 
 
-**besimple_deployment.ssh.start**
-
-Fired when ssh session is started. Come with the following parameters:
+**besimple_deployment.ssh.start**: fired when ssh session is started. Come with the following parameters:
 
 -  shell: The shell connection resource
 
 
-**besimple_deployment.ssh.success**
-
-Fired on ssh commands success. Come with the following parameters:
+**besimple_deployment.ssh.success**: fired on ssh commands success. Come with the following parameters:
 
 -  lines: The `stdout` lines as array
 
 
-**besimple_deployment.ssh.error**
-
-Fired when ssh encounter an error. Come with the following parameters:
+**besimple_deployment.ssh.error**: fired when ssh encounter an error. Come with the following parameters:
 
 -  code: The error code
 -  message: The error message
 
 
-**besimple_deployment.ssh.command**
-
-Fired on each ssh command. Come with the following parameters:
+**besimple_deployment.ssh.command**: fired on each ssh command. Come with the following parameters:
 
 -  command: The command line
 -  stdout: The `stdout` lines as array
