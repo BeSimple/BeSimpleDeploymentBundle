@@ -30,32 +30,9 @@ How to install
 --------------
 
 
-###Get the sources (using git)
-
-Use the submodule git command if your project is under git control, if not, just use the clone command.
-
--  For stable release:
-
-    git submodule add git://github.com/BeSimple/DeploymentBundle.git vendor/bundles/BeSimple/DeploymentBundle
-    
--  For nightly build:
-
-    git submodule add git://github.com/jfsimon/DeploymentBundle.git vendor/bundles/BeSimple/DeploymentBundle
-
-
-###Add it to your application
-
-You have to add the bundle to your `AppKernel` class.
-Notice that the service is loaded only if you setted up the servers configuration in yous config file.
-
-    public function registerBundles()
-    {
-        return array(
-            // ...
-            new BeSimple\DeploymentBundle\BeSimpleDeploymentBundle(),
-            // ...
-        );
-    }
+1.  Get the sources via GIT
+2.  Register bundle in `AppKernel` class
+3.  Add `besimple_deployment` entry to your config file
     
 
 How to configure
@@ -165,15 +142,70 @@ You can connect many events to know what's happening.
 
 ###Rsync events
 
-**`besimple_deployment.rsync.start`**
+Subject of these events is the `besimple.rsync` service.
+
+
+**besimple_deployment.rsync.start**
+
+Fired when rsync is started. Come with the following parameters:
+
+-  command: The command line
+
+
 **besimple_deployment.rsync.success**
+ 
+Fired on rsync success. Come with the following parameters:
+
+-  lines: The `stdout` lines as array
+
+
 **besimple_deployment.rsync.error**
+
+Fired when rsync enconter an error. Come with the following parameters:
+
+-  code: The error code
+-  message: The error message
+
+
 **besimple_deployment.rsync.line**
+
+Fired on each rsync `stdout` or `stderr` line. Come with the following parameters:
+
+-  type: `out` or `err`
+-  line: The text line
 
 
 ###SSH events
 
+Subject of these events is the `besimple.ssh` service
+
+
 **besimple_deployment.ssh.start**
+
+Fired when ssh session is started. Come with the following parameters:
+
+-  shell: The shell connection resource
+
+
 **besimple_deployment.ssh.success**
+
+Fired on ssh commands success. Come with the following parameters:
+
+-  lines: The `stdout` lines as array
+
+
 **besimple_deployment.ssh.error**
-**besimple_deployment.ssh.line**
+
+Fired when ssh encounter an error. Come with the following parameters:
+
+-  code: The error code
+-  message: The error message
+
+
+**besimple_deployment.ssh.command**
+
+Fired on each ssh command. Come with the following parameters:
+
+-  command: The command line
+-  stdout: The `stdout` lines as array
+-  stderr: The `stderr` lines as array

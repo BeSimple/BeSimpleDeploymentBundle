@@ -87,18 +87,37 @@ class Ssh
         fclose($this->shell);
     }
 
-    protected function execute($command)
+    protected function execute(array $command)
     {
+        $command = $this->buildCommand($command);
+
         $outStream = ssh2_exec($connection, $command);
         $errStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
 
         stream_set_blocking($outStream, true);
         stream_set_blocking($errStream, true);
 
-        $this->stdout = array_merge($this->stdout, explode("\n", stream_get_contents($outStream)));
-        $this->stderr = array_merge($this->stderr, explode("\n", stream_get_contents($errStream)));
+        $stdout = explode("\n", stream_get_contents($outStream));
+        $stderr = explode("\n", stream_get_contents($errStream));
+
+        $this->dispatch('command', array('stdout' => stdout, 'stderr' => $stderr));
+
+        $this->stdout = array_merge($this->stdout, $stdout);
+        $this->stderr = array_merge($this->stderr, $stderr);
 
         fclose($outStream);
         fclose($errStream);
+    }
+
+    protected function buildCommand(array $command)
+    {
+        if ($command['type'] === 'shell') {
+            return $command['command'];
+        }
+
+        $symfony = $this->config['symfony_command'];
+        $env = $command['env'] ?: $this->env;
+
+        return sprintf('%s %s --env="%s"', $symfony, $command['command'], $env);
     }
 }
