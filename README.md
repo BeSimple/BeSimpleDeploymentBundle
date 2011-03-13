@@ -2,12 +2,28 @@ Symfony2 applications deployment made easy
 ==========================================
 
 
-**This bundle is still under developpment, unusable for now!**
+**Untested bundle, watchout (maybe full of typos)**
 
--  DeploymentBundle supports many types of file synchronisation (rsync in ssh mode).
--  You can setup many deployment configuration for many servers.
--  You can provide `ignore` and `force` rules to control wich files are synchronized (in an easy way).
--  You can schedule commands executed after the deployment (on the remote server).
+
+###Description
+
+-  Deploy your project usinc rsync (must be installed) in ssh mode.
+-  Setup deployment on many servers.
+-  Easily create rules for rsync (ignore / force files).
+-  Schedule commands to run on ditant server via ssh (SSH2 PHP extension required).
+
+
+###Links
+
+-  Stable releases : [https://github.com/besimple/DeploymentBundle](https://github.com/besimple/DeploymentBundle)
+-  Nightly builds : [https://github.com/jfsimon/DeploymentBundle](https://github.com/jfsimon/DeploymentBundle)
+-  Rest documentation : *will come later*
+
+
+###Requirements
+
+-  Rsync package : [http://samba.anu.edu.au/rsync/](http://samba.anu.edu.au/rsync/)
+-  SSH2 extension : [http://fr.php.net/manual/en/book.ssh2.php](http://fr.php.net/manual/en/book.ssh2.php)
 
 
 How to install
@@ -59,7 +75,7 @@ How to configure
             git:
                 ignore:   [.git, .git*, .svn]
             symfony:
-                ignore:   [/app/logs, /app/cache, /web/uploads, /web/*_dev.php]
+                ignore:   [/app/logs/*, /app/cache/*, /web/uploads/*, /web/*_dev.php]
                 
         commands:
             cache_warmup:
@@ -100,11 +116,6 @@ Some templates are already bundled by default. The following parameters can be u
 -  force : ignored files can be forced this way
 
 
-###Commands configuration
-
-To be continued.
-
-
 ###Servers configuration
 
 Here is the full list of parameters :
@@ -134,6 +145,9 @@ go into your project root folder and type the following commands :
     # Launch your deployment :
     ./app/console deployment:launch [server]
     
+You can use the verbose option (`-v`) to get all feedback from rsync and
+remote ssh commands.
+    
     
 ###Using the service
 
@@ -146,18 +160,20 @@ by invoking the 'deployment' service :
     // Launch your deployment :
     $this->get('besimple_deployment')->launch([$server]);
     
+You can connect many events to know what's happening.
+    
 
-###Events
+###Rsync events
 
--  besimple_deployment.start
--  besimple_deployment.success
--  besimple_deployment.error
--  besimple_deployment.rsync
+**`besimple_deployment.rsync.start`**
+**besimple_deployment.rsync.success**
+**besimple_deployment.rsync.error**
+**besimple_deployment.rsync.line**
 
 
 ###SSH events
 
--  besimple_deployment.ssh.start
--  besimple_deployment.ssh.success
--  besimple_deployment.ssh.error
--  besimple_deployment.ssh.rsync
+**besimple_deployment.ssh.start**
+**besimple_deployment.ssh.success**
+**besimple_deployment.ssh.error**
+**besimple_deployment.ssh.line**
