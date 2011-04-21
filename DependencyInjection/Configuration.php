@@ -29,22 +29,24 @@ class Configuration
     protected function addRsyncSection(ArrayNodeDefinition $node)
     {
         $node->children()
-            ->arrayNode('rsync')->children()
-                ->scalarNode('command')->defaultValue('rsync')->cannotBeEmpty()->end()
-                ->booleanNode('delete')->defaultFalse()->end()
-                ->scalarNode('options')->defaultValue('-Cva')->end()
-                ->scalarNode('root')->defaultValue('%kernel.root_dir%/..')->isRequired()->cannotBeEmpty()->end()
-            ->end()
+            ->arrayNode('rsync')
+                ->addDefaultsIfNotSet()
+                ->children()
+                    ->scalarNode('command')->defaultValue('rsync')->cannotBeEmpty()->end()
+                    ->booleanNode('delete')->defaultFalse()->end()
+                    ->scalarNode('options')->defaultValue('-Cva')->end()
+                    ->scalarNode('root')->defaultValue('%kernel.root_dir%/..')->cannotBeEmpty()->end()
+                ->end()
         ;
     }
 
     protected function addSshSection(ArrayNodeDefinition $node)
     {
         $node->children()
-            ->arrayNode('rsync')->children()
+            ->arrayNode('ssh')->children()
                 ->scalarNode('pubkey_file')->defaultNull()->end()
                 ->scalarNode('privkey_file')->defaultNull()->end()
-                ->scalarNode('passpharse')->defaultNull()->end()
+                ->scalarNode('passphrase')->defaultNull()->end()
             ->end()
         ;
     }
@@ -55,8 +57,8 @@ class Configuration
             ->arrayNode('rules')
                 ->useAttributeAsKey('name')
                 ->prototype('array')->children()
-                    ->arrayNode('ignore')->defaultValue(array())->end()
-                    ->arrayNode('force')->defaultValue(array())->end()
+                    ->arrayNode('ignore')->defaultValue(array())->ignoreExtraKeys()->end()
+                    ->arrayNode('force')->defaultValue(array())->ignoreExtraKeys()->end()
                 ->end()
             ->end()
         ;
@@ -71,9 +73,9 @@ class Configuration
                 ->scalarNode('command')->defaultValue('./app/console')->cannotBeEmpty()->end()
             ->end()
             ->prototype('array')->children()
-                ->arrayNode('type')->defaultValue('symfony')->end()
-                ->arrayNode('command')->isRequired()->cannotBeEmpty()->end()
-                ->arrayNode('env')->defaultNull()->end()
+                ->scalarNode('type')->defaultValue('symfony')->end()
+                ->scalarNode('command')->isRequired()->cannotBeEmpty()->end()
+                ->scalarNode('env')->defaultNull()->end()
             ->end()
         ;
     }
@@ -90,8 +92,8 @@ class Configuration
                     ->scalarNode('username')->defaultNull()->end()
                     ->scalarNode('password')->defaultNull()->end()
                     ->scalarNode('path')->isRequired()->cannotBeEmpty()->end()
-                    ->arrayNode('rules')->defaultValue(array())->end()
-                    ->arrayNode('commands')->defaultValue(array())->end()
+                    ->arrayNode('rules')->defaultValue(array())->ignoreExtraKeys()->end()
+                    ->arrayNode('commands')->defaultValue(array())->ignoreExtraKeys()->end()
                 ->end()
             ->end()
         ;
