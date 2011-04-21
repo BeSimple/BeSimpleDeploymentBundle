@@ -2,7 +2,7 @@
 
 namespace BeSimple\DeploymentBundle\DependencyInjection;
 
-use Symfony\Component\Config\Definition\Builder\NodeBuilder;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
 class Configuration
@@ -15,7 +15,7 @@ class Configuration
     public function getConfigTree()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('besimple_deployment', 'array');
+        $rootNode = $treeBuilder->root('be_simple_deployment', 'array');
 
         $this->addRsyncSection($rootNode);
         $this->addSshSection($rootNode);
@@ -26,10 +26,10 @@ class Configuration
         return $treeBuilder->buildTree();
     }
 
-    protected function addRsyncSection(NodeBuilder $node)
+    protected function addRsyncSection(ArrayNodeDefinition $node)
     {
-        $node
-            ->arrayNode('rsync')
+        $node->children()
+            ->arrayNode('rsync')->children()
                 ->scalarNode('command')->defaultValue('rsync')->cannotBeEmpty()->end()
                 ->booleanNode('delete')->defaultFalse()->end()
                 ->scalarNode('options')->defaultValue('-Cva')->end()
@@ -38,10 +38,10 @@ class Configuration
         ;
     }
 
-    protected function addSshSection(NodeBuilder $node)
+    protected function addSshSection(ArrayNodeDefinition $node)
     {
-        $node
-            ->arrayNode('rsync')
+        $node->children()
+            ->arrayNode('rsync')->children()
                 ->scalarNode('pubkey_file')->defaultNull()->end()
                 ->scalarNode('privkey_file')->defaultNull()->end()
                 ->scalarNode('passpharse')->defaultNull()->end()
@@ -49,12 +49,12 @@ class Configuration
         ;
     }
 
-    protected function addRulesSection(NodeBuilder $node)
+    protected function addRulesSection(ArrayNodeDefinition $node)
     {
-        $node
+        $node->children()
             ->arrayNode('rules')
                 ->useAttributeAsKey('name')
-                ->prototype('array')
+                ->prototype('array')->children()
                     ->arrayNode('ignore')->defaultValue(array())->end()
                     ->arrayNode('force')->defaultValue(array())->end()
                 ->end()
@@ -62,27 +62,28 @@ class Configuration
         ;
     }
 
-    protected function addCommandsSection(NodeBuilder $node)
+    protected function addCommandsSection(ArrayNodeDefinition $node)
     {
-        $node
+        $node->children()
             ->arrayNode('commands')
+            ->useAttributeAsKey('name')
+            ->children()
                 ->scalarNode('command')->defaultValue('./app/console')->cannotBeEmpty()->end()
-                ->useAttributeAsKey('name')
-                ->prototype('array')
-                    ->arrayNode('type')->defaultValue('symfony')->end()
-                    ->arrayNode('command')->isRequired()->cannotBeEmpty()->end()
-                    ->arrayNode('env')->defaultNull()->end()
-                ->end()
+            ->end()
+            ->prototype('array')->children()
+                ->arrayNode('type')->defaultValue('symfony')->end()
+                ->arrayNode('command')->isRequired()->cannotBeEmpty()->end()
+                ->arrayNode('env')->defaultNull()->end()
             ->end()
         ;
     }
 
-    protected function addServersSection(NodeBuilder $node)
+    protected function addServersSection(ArrayNodeDefinition $node)
     {
-        $node
+        $node->children()
             ->arrayNode('servers')
                 ->useAttributeAsKey('name')
-                ->prototype('array')
+                ->prototype('array')->children()
                     ->scalarNode('host')->defaultValue('localhost')->end()
                     ->scalarNode('rsync_port')->defaultNull()->end()
                     ->scalarNode('ssh_port')->defaultValue(22)->cannotBeEmpty()->end()

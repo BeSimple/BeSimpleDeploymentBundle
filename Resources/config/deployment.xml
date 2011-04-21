@@ -5,40 +5,40 @@
     xsi:schemaLocation="http://www.symfony-project.org/schema/dic/services http://www.symfony-project.org/schema/dic/services/services-1.0.xsd">
     <parameters>
     	
-    	<parameter key="besimple_deployment.rsync.class">BeSimple\DeploymentBundle\Deployer\Rsync</parameter>
-    	<parameter key="besimple_deployment.ssh.class">BeSimple\DeploymentBundle\Deployer\Ssh</parameter>
-		<parameter key="besimple_deployment.config.class">BeSimple\DeploymentBundle\Deployer\Config</parameter>
-        <parameter key="besimple_deployment.logger.class">BeSimple\DeploymentBundle\Deployer\Logger</parameter>
-		<parameter key="besimple_deployment.deployer.class">BeSimple\DeploymentBundle\Deployer\Deployer</parameter>
+    	<parameter key="be_simple_deployment.rsync.class">BeSimple\DeploymentBundle\Deployer\Rsync</parameter>
+    	<parameter key="be_simple_deployment.ssh.class">BeSimple\DeploymentBundle\Deployer\Ssh</parameter>
+		<parameter key="be_simple_deployment.config.class">BeSimple\DeploymentBundle\Deployer\Config</parameter>
+        <parameter key="be_simple_deployment.logger.class">BeSimple\DeploymentBundle\Deployer\Logger</parameter>
+		<parameter key="be_simple_deployment.deployer.class">BeSimple\DeploymentBundle\Deployer\Deployer</parameter>
 	
 	</parameters>
     <services>
 		
-		<service id="besimple_deployment.rsync" class="%besimple_deployment.rsync.class%">
-            <argument type="service" id="besimple_deployment.logger" />
+		<service id="be_simple_deployment.rsync" class="%be_simple_deployment.rsync.class%">
+            <argument type="service" id="be_simple_deployment.logger" />
             <argument type="service" id="event_dispatcher" />
-            <argument>%besimple_deployment.config.rsync%</argument>
+            <argument>%be_simple_deployment.config.rsync%</argument>
         </service>
         
-        <service id="besimple_deployment.ssh" class="%besimple_deployment.ssh.class%">
-            <argument type="service" id="besimple_deployment.logger" />
+        <service id="be_simple_deployment.ssh" class="%be_simple_deployment.ssh.class%">
+            <argument type="service" id="be_simple_deployment.logger" />
             <argument type="service" id="event_dispatcher" />
-            <argument>%besimple_deployment.config.ssh%</argument>
+            <argument>%be_simple_deployment.config.ssh%</argument>
         </service>
 		
-		<service id="besimple_deployment.config" class="%besimple_deployment.config.class%">
-            <argument>%besimple_deployment.config.rules%</argument>
-            <argument>%besimple_deployment.config.commands%</argument>
-            <argument>%besimple_deployment.config.servers%</argument>
+		<service id="be_simple_deployment.config" class="%be_simple_deployment.config.class%">
+            <argument>%be_simple_deployment.config.rules%</argument>
+            <argument>%be_simple_deployment.config.commands%</argument>
+            <argument>%be_simple_deployment.config.servers%</argument>
         </service>
 		
-		<service id="besimple_deployment.logger" class="%besimple_deployment.logger.class%">
+		<service id="be_simple_deployment.logger" class="%be_simple_deployment.logger.class%">
             <argument type="service" id="logger" on-invalid="null" />
         </service>
         
-		<service id="besimple_deployment.deployer" class="%besimple_deployment.deployer.class%">
-		    <argument type="service" id="besimple_deployment.rsync" />
-            <argument type="service" id="besimple_deployment.config" />
+		<service id="be_simple_deployment.deployer" class="%be_simple_deployment.deployer.class%">
+		    <argument type="service" id="be_simple_deployment.rsync" />
+            <argument type="service" id="be_simple_deployment.config" />
 			<argument type="service" id="event_dispatcher" />
         </service>
 		
