@@ -22,7 +22,7 @@
         
         <service id="be_simple_deployment.ssh" class="%be_simple_deployment.ssh.class%">
             <argument type="service" id="be_simple_deployment.logger" />
-            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="service_container" />
             <argument>%be_simple_deployment.config.ssh%</argument>
         </service>
 		
@@ -38,6 +38,7 @@
         
 		<service id="be_simple_deployment.deployer" class="%be_simple_deployment.deployer.class%">
 		    <argument type="service" id="be_simple_deployment.rsync" />
+		    <argument type="service" id="be_simple_deployment.ssh" />
             <argument type="service" id="be_simple_deployment.config" />
 			<argument type="service" id="event_dispatcher" />
         </service>

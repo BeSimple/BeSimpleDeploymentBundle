@@ -2,7 +2,7 @@
 
 namespace BeSimple\DeploymentBundle\Command;
 
-use Bundle\DeploymentBundle\Deployer\Deployer;
+use BeSimple\DeploymentBundle\Deployer\Deployer;
 use Symfony\Component\Console\Command\Command;
 
 class TestDeploymentCommand extends DeploymentCommand
