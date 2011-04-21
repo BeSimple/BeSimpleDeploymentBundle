@@ -9,11 +9,14 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
+use Symfony\Component\Console\Command\Command;
 
 abstract class DeploymentCommand extends Command
 {
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setDefinition(array(
                 new InputArgument('server', InputArgument::OPTIONAL, 'The target server name', null),
