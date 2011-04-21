@@ -5,7 +5,7 @@ namespace BeSimple\DeploymentBundle\Command;
 use Bundle\DeploymentBundle\Deployer\Deployer;
 use Symfony\Component\Console\Command\Command;
 
-abstract class TestDeploymentCommand extends DeploymentCommand
+class TestDeploymentCommand extends DeploymentCommand
 {
     protected function configure()
     {

@@ -9,9 +9,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Command\Command as BaseCommand;
 
-abstract class DeploymentCommand extends Command
+abstract class DeploymentCommand extends BaseCommand
 {
     protected function configure()
     {
