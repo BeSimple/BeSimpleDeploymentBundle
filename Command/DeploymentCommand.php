@@ -26,23 +26,23 @@ abstract class DeploymentCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $deployer = $this->container->get('besimple_deployment.deployer');
+        $deployer = $this->container->get('be_simple_deployment.deployer');
         $eventDispatcher = $this->container->get('event_dispatcher');
 
         $this->output = $output;
         $this->output->setDecorated(true);
 
-        if ($output->getVerbosity() > Output::VERBOSITY_QUIET) {
-            $eventDispatcher->addListener('besimple_deployment.start', function ($event) use ($that) { $that->write($event, 'start'); });
-            $eventDispatcher->addListener('besimple_deployment.error', function ($event) use ($that) { $that->write($event, 'error'); });
-            $eventDispatcher->addListener('besimple_deployment.success', function ($event) use ($that) { $that->write($event, 'success'); });
+        //if ($output->getVerbosity() > Output::VERBOSITY_QUIET) {
+            //$eventDispatcher->addListener('besimple_deployment.start', function ($event) use ($that) { $that->write($event, 'start'); });
+            //$eventDispatcher->addListener('besimple_deployment.error', function ($event) use ($that) { $that->write($event, 'error'); });
+            //$eventDispatcher->addListener('besimple_deployment.success', function ($event) use ($that) { $that->write($event, 'success'); });
 
-            if ($output->getVerbosity() > Output::VERBOSITY_NORMAL) {
-                $eventDispatcher->addListener('besimple_deployment.rsync', function ($event) use ($that) { $that->write($event, 'rsync'); });
-            }
+            //if ($output->getVerbosity() > Output::VERBOSITY_NORMAL) {
+                //$eventDispatcher->addListener('besimple_deployment.rsync', function ($event) use ($that) { $that->write($event, 'rsync'); });
+            //}
 
-            // TODO: add SSH events
-        }
+            //// TODO: add SSH events
+        //}
 
         $this->executeDeployment($deployer, $input->getArgument('server'));
     }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Bundle\DeploymentBundle\Deployer;
+namespace BeSimple\DeploymentBundle\Deployer;
 
-use Symfony\Bundle\FrameworkBundle\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Deployer
 {
@@ -11,7 +11,7 @@ class Deployer
     protected $config;
     protected $eventDispatcher;
 
-    public function __construct(Rsync $rsync, Ssh $ssh, Config $config, EventDispatcher $eventDispatcher)
+    public function __construct(Rsync $rsync, Ssh $ssh, Config $config, EventDispatcherInterface $eventDispatcher)
     {
         $this->rsync = $rsync;
         $this->ssh = $ssh;
@@ -48,14 +48,15 @@ class Deployer
         }
 
         catch(\Exception $e) {
-            $this->dispatchEvent('error', array('server' => $server, 'method' => $method, 'exception' => $e));
+            throw $e;
+            //$this->dispatchEvent('error', array('server' => $server, 'method' => $method, 'exception' => $e));
         }
 
-        $this->dispatchEvent('success', array('server' => $server, 'real' => $real, 'rsync' => $rsync, 'ssh' => $ssh));
+        //$this->dispatchEvent('success', array('server' => $server, 'real' => $real, 'rsync' => $rsync, 'ssh' => $ssh));
     }
 
     protected function dispatchEvent($name, array $parameters)
     {
-        $this->eventDispatcher->notify(new Event($this, 'besimple_deployment.'.$name, $parameters));
+        //$this->eventDispatcher->notify(new Event($this, 'besimple_deployment.'.$name, $parameters));
     }
 }

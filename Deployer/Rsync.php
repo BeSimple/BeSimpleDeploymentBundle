@@ -2,7 +2,7 @@
 
 namespace BeSimple\DeploymentBundle\Deployer;
 
-use Symfony\Bundle\FrameworkBundle\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\Process\Process;
 
@@ -15,7 +15,7 @@ class Rsync
     protected $stdout;
     protected $callback;
 
-    public function __construct(Logger $logger, EventDispatcher $eventDispatcher, array $config)
+    public function __construct(Logger $logger, EventDispatcherInterface $eventDispatcher, array $config)
     {
         $this->logger = $logger;
         $this->eventDispatcher = $eventDispatcher;
