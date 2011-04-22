@@ -30,13 +30,13 @@ class Config
 
         if (!isset($this->config[$server])) {
             $this->config[$server] = array(
-                'connection' => $this->getConnectionConfig($this->servers[$server]),
-                'rules' => $this->getRulesConfig($this->servers[$server]),
-                'commands' => $this->getCommandsConfig($this->servers[$server]),
+                'connection' => $this->getConnectionConfig($server),
+                'rules' => $this->getRulesConfig($server),
+                'commands' => $this->getCommandsConfig($server),
             );
         }
 
-        return $this->config[$name];
+        return $this->config[$server];
     }
 
     protected function getConnectionConfig($server)
