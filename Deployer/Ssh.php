@@ -2,19 +2,21 @@
 
 namespace BeSimple\DeploymentBundle\Deployer;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 class Ssh
 {
     protected $logger;
-    protected $config;
+    protected $container;
     protected $session;
     protected $shell;
     protected $stdout;
     protected $stderr;
 
-    public function __construct(Logger $logger, array $config)
+    public function __construct(Logger $logger, ContainerInterface $container)
     {
         $this->logger = $logger;
-        $this->config = $config;
+        $this->container = $container;
         $this->session = null;
         $this->stdout = array();
         $this->stdin = array();
@@ -72,7 +74,7 @@ class Ssh
             }
         }
 
-        $this->shell = ssh2_shell($this->session, $this->config['shell']);
+        $this->shell = ssh2_shell($this->session, $this->container->getParameter('be_simple_deployment.ssh.shell'));
 
         if (!$this->shell) {
             throw new \RuntimeException(sprintf('Failed opening "%s" shell', $this->config['shell']));
