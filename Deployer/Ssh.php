@@ -74,7 +74,7 @@ class Ssh
             }
         }
 
-        $this->shell = ssh2_shell($this->session, $this->container->getParameter('be_simple_deployment.ssh.shell'));
+        $this->shell = ssh2_shell($this->session);
 
         if (!$this->shell) {
             throw new \RuntimeException(sprintf('Failed opening "%s" shell', $this->config['shell']));
