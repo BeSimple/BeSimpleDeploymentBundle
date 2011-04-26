@@ -20,6 +20,7 @@ class Ssh
         $this->session = null;
         $this->stdout = array();
         $this->stdin = array();
+        $this->stderr = array();
     }
 
     public function getStdout($glue = "\n")
@@ -43,7 +44,7 @@ class Ssh
     public function run(array $connection, array $commands, $real = false)
     {
         $this->connect($connection);
-        $this->execute(sprintf('cd %s', $connection['path']));
+        $this->execute(array('type' => 'shell', 'command' => sprintf('cd %s', $connection['path'])));
 
         if ($real) {
             foreach ($commands as $command) {
@@ -64,7 +65,7 @@ class Ssh
             throw new \InvalidArgumentException(sprintf('SSH connection failed on "%s:%s"', $connection['host'], $connection['ssh_port']));
         }
 
-        if ($connection['username'] && $connection['pubkey_file'] && $connection['privkey_file']) {
+        if (isset($connection['username']) && isset($connection['pubkey_file']) && isset($connection['privkey_file'])) {
             if (!ssh2_auth_pubkey_file($connection['username'], $connection['pubkey_file'], $connection['privkey_file'], $connection['passphrase'])) {
                 throw new \InvalidArgumentException(sprintf('SSH authentication failed for user "%s" with public key "%s"', $connection['username'], $connection['pubkey_file']));
             }
@@ -93,8 +94,8 @@ class Ssh
     {
         $command = $this->buildCommand($command);
 
-        $outStream = ssh2_exec($connection, $command);
-        $errStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
+        $outStream = ssh2_exec($this->session, $command);
+        $errStream = ssh2_fetch_stream($outStream, SSH2_STREAM_STDERR);
 
         stream_set_blocking($outStream, true);
         stream_set_blocking($errStream, true);
@@ -102,10 +103,12 @@ class Ssh
         $stdout = explode("\n", stream_get_contents($outStream));
         $stderr = explode("\n", stream_get_contents($errStream));
 
-        $this->dispatch('command', array('stdout' => stdout, 'stderr' => $stderr));
+        //$this->dispatch('command', array('stdout' => stdout, 'stderr' => $stderr));
 
         $this->stdout = array_merge($this->stdout, $stdout);
-        $this->stderr = array_merge($this->stderr, $stderr);
+        if (is_array($stderr)) {
+            $this->stderr = array_merge($this->stderr, $stderr);
+        }
 
         fclose($outStream);
         fclose($errStream);
