@@ -85,7 +85,7 @@ How to configure
 
 ###An example
 
-    deployment:
+    besimple_deployment:
     
         rsync:
             delete:       true

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundle\DeploymentBundle\Deployer;
+namespace BeSimple\DeploymentBundle\Deployer;
 
 class Config
 {
@@ -14,7 +14,7 @@ class Config
         $this->rules = $rules;
         $this->commands = $commands;
         $this->servers = $servers;
-        $this->config = $config;
+        $this->config = array();
     }
 
     public function getServerNames()
@@ -22,26 +22,26 @@ class Config
         return array_keys($this->servers);
     }
 
-    public function getSeverConfig($name)
+    public function getServerConfig($server)
     {
-        if (!isset($this->servers[$name])) {
-            throw new \InvalidArgumentException(sprintf('Server "%s" not configured', $name));
+        if (!isset($this->servers[$server])) {
+            throw new \InvalidArgumentException(sprintf('Server "%s" not configured', $server));
         }
 
-        if (!isset($this->config[$name])) {
-            $this->config[$name] = array(
-                'connection' => $this->getConnectionConfig($this->server[$name]),
-                'rules' => $this->getRulesConfig($this->server[$name]),
-                'commands' => $this->getCommandsConfig($this->server[$name]),
+        if (!isset($this->config[$server])) {
+            $this->config[$server] = array(
+                'connection' => $this->getConnectionConfig($server),
+                'rules' => $this->getRulesConfig($server),
+                'commands' => $this->getCommandsConfig($server),
             );
         }
 
-        return $this->config[$name];
+        return $this->config[$server];
     }
 
     protected function getConnectionConfig($server)
     {
-        $config = $this->server[$server];
+        $config = $this->servers[$server];
         unset($config['rules'], $config['commands']);
 
         return $config;
@@ -56,7 +56,7 @@ class Config
 
         $parameters = array_keys($config);
 
-        foreach ($this->server[$server]['rules'] as $name) {
+        foreach ($this->servers[$server]['rules'] as $name) {
             if (!isset($this->rules[$name])) {
                 throw new \InvalidArgumentException(sprintf('Rule "%s" declared in server "%s" is not configured', $name, $server));
             }
@@ -73,7 +73,7 @@ class Config
     {
         $config = array();
 
-        foreach ($this->server[$server]['commands'] as $name) {
+        foreach ($this->servers[$server]['commands'] as $name) {
             if (!isset($this->commands[$name])) {
                 throw new \InvalidArgumentException(sprintf('Command "%s" declared in server "%s" is not configured', $name, $server));
             }

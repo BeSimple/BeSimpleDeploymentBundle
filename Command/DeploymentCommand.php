@@ -3,17 +3,20 @@
 namespace BeSimple\DeploymentBundle\Command;
 
 use Symfony\Component\EventDispatcher\EventInterface;
-use Bundle\DeploymentBundle\Deployer\Deployer;
+use BeSimple\DeploymentBundle\Deployer\Deployer;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
+use Symfony\Bundle\FrameworkBundle\Command\Command as BaseCommand;
 
-abstract class DeploymentCommand extends Command
+abstract class DeploymentCommand extends BaseCommand
 {
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setDefinition(array(
                 new InputArgument('server', InputArgument::OPTIONAL, 'The target server name', null),
@@ -23,23 +26,23 @@ abstract class DeploymentCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $deployer = $this->container->get('besimple_deployment.deployer');
+        $deployer = $this->container->get('be_simple_deployment.deployer');
         $eventDispatcher = $this->container->get('event_dispatcher');
 
         $this->output = $output;
         $this->output->setDecorated(true);
 
-        if ($output->getVerbosity() > Output::VERBOSITY_QUIET) {
-            $dispatcher->connect('besimple_deployment.start', function ($event) use ($that) { $that->write($event, 'start'); });
-            $dispatcher->connect('besimple_deployment.error', function ($event) use ($that) { $that->write($event, 'error'); });
-            $dispatcher->connect('besimple_deployment.success', function ($event) use ($that) { $that->write($event, 'success'); });
+        //if ($output->getVerbosity() > Output::VERBOSITY_QUIET) {
+            //$eventDispatcher->addListener('besimple_deployment.start', function ($event) use ($that) { $that->write($event, 'start'); });
+            //$eventDispatcher->addListener('besimple_deployment.error', function ($event) use ($that) { $that->write($event, 'error'); });
+            //$eventDispatcher->addListener('besimple_deployment.success', function ($event) use ($that) { $that->write($event, 'success'); });
 
-            if ($output->getVerbosity() > Output::VERBOSITY_NORMAL) {
-                $dispatcher->connect('besimple_deployment.rsync', function ($event) use ($that) { $that->write($event, 'rsync'); });
-            }
+            //if ($output->getVerbosity() > Output::VERBOSITY_NORMAL) {
+                //$eventDispatcher->addListener('besimple_deployment.rsync', function ($event) use ($that) { $that->write($event, 'rsync'); });
+            //}
 
-            // TODO: add SSH events
-        }
+            //// TODO: add SSH events
+        //}
 
         $this->executeDeployment($deployer, $input->getArgument('server'));
     }

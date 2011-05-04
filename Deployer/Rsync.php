@@ -2,7 +2,7 @@
 
 namespace BeSimple\DeploymentBundle\Deployer;
 
-use Symfony\Bundle\FrameworkBundle\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\Process\Process;
 
@@ -15,7 +15,7 @@ class Rsync
     protected $stdout;
     protected $callback;
 
-    public function __construct(Logger $logger, EventDispatcher $eventDispatcher, array $config)
+    public function __construct(Logger $logger, EventDispatcherInterface $eventDispatcher, array $config)
     {
         $this->logger = $logger;
         $this->eventDispatcher = $eventDispatcher;
@@ -52,7 +52,8 @@ class Rsync
         }
 
         $command = $this->buildCommand($connection, $rules, $real);
-        $process = new Process($commant, $root);
+        echo $command;
+        $process = new Process($command, $root);
 
         $this->stderr = array();
         $this->stdout = array();
@@ -60,7 +61,7 @@ class Rsync
         $code = $process->run(array($this, 'onStdLine'));
 
         if ($code !== 0) {
-            throw new \RuntimeErrorException($this->stderr, $process->getExitCode());
+            throw new \Exception($this->stderr, $process->getExitCode());
         }
 
         return $this->stdout;
@@ -74,7 +75,7 @@ class Rsync
             $this->stderr = $line;
         }
 
-        $this->eventDispatcher->notify(new Event($this, 'besimple_deployer.rsync', array('line' => $line, 'type' => $type)));
+        //$this->eventDispatcher->notify(new Event($this, 'besimple_deployer.rsync', array('line' => $line, 'type' => $type)));
     }
 
     protected function buildCommand(array $connection, array $rules, $real = false)
@@ -82,18 +83,19 @@ class Rsync
         $source = '.';
         $user = $connection['username'] ? $connection['username'].'@' : '';
         $destination = sprintf('%s%s:%s', $user, $connection['host'], $connection['path']);
-        $options = $this->config['options'];
+        $options = array();
+        $options[] = $this->config['options'];
 
-        if ($connection['port']) {
+        if (!empty($connection['port'])) {
             $options[] = '-p '.$connection['port'];
         }
 
-        if ($this->options['delete']) {
+        if ($this->config['delete']) {
             $options[] = '--delete';
         }
 
         if (count($rules)) {
-            $options[] = '-f +*';
+            $options[] = "--filter='+ *'";
 
             foreach ($rules['ignore'] as $mask) {
                 $options[] = sprintf('-f -%s', $mask);
@@ -104,6 +106,6 @@ class Rsync
             }
         }
 
-        return sprintf('%s -e ssh %s %s %s', $this->config['command'], implode(' ', $options), $source, $detination);
+        return sprintf('%s -e ssh %s %s %s', $this->config['command'], implode(' ', $options), $source, $destination);
     }
 }

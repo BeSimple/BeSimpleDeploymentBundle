@@ -2,12 +2,14 @@
 
 namespace BeSimple\DeploymentBundle\Command;
 
-use Bundle\DeploymentBundle\Deployer\Deployer;
+use BeSimple\DeploymentBundle\Deployer\Deployer;
+use Symfony\Component\Console\Command\Command;
 
-abstract class DeploymentCommand extends Command
+class TestDeploymentCommand extends DeploymentCommand
 {
     protected function configure()
     {
+        parent::configure();
         $this->setName('deployment:test');
     }
 
