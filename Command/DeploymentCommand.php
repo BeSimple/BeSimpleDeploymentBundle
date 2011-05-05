@@ -17,6 +17,9 @@ use BeSimple\DeploymentBundle\Event\FeedbackEvent;
 
 abstract class DeploymentCommand extends BaseCommand
 {
+    /**
+     * @return void
+     */
     protected function configure()
     {
         parent::configure();
@@ -28,6 +31,11 @@ abstract class DeploymentCommand extends BaseCommand
         ;
     }
 
+    /**
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @return void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $deployer = $this->container->get('be_simple_deployment.deployer');
@@ -96,10 +104,21 @@ abstract class DeploymentCommand extends BaseCommand
         $this->executeDeployment($deployer, $input->getArgument('server'));
     }
 
+    /**
+     * @param string $message
+     * @param string $style
+     * @return void
+     */
     public function write($message, $style = 'comment')
     {
         $this->output->writeln('<%s>%s</%s>', $style, $message, $style);
     }
 
+    /**
+     * @abstract
+     * @param \BeSimple\DeploymentBundle\Deployer\Deployer $deployer
+     * @param string $server
+     * @return void
+     */
     abstract protected function executeDeployment(Deployer $deployer, $server);
 }

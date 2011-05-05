@@ -7,6 +7,9 @@ use Symfony\Component\Console\Command\Command;
 
 class LaunchDeploymentCommand extends DeploymentCommand
 {
+    /**
+     * @return void
+     */
     protected function configure()
     {
         parent::configure();
@@ -17,6 +20,11 @@ class LaunchDeploymentCommand extends DeploymentCommand
         ;
     }
 
+    /**
+     * @param \BeSimple\DeploymentBundle\Deployer\Deployer $deployer
+     * @param string $server
+     * @return void
+     */
     protected function executeDeployment(Deployer $deployer, $server)
     {
         $deployer->launch($server);

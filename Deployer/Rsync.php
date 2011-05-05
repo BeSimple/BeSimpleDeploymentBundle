@@ -11,13 +11,41 @@ use BeSimple\DeploymentBundle\Events;
 
 class Rsync
 {
+    /**
+     * @var Logger
+     */
     protected $logger;
+
+    /**
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */
     protected $dispatcher;
+
+    /**
+     * @var array
+     */
     protected $config;
+
+    /**
+     * @var array
+     */
     protected $stderr;
+
+    /**
+     * @var array
+     */
     protected $stdout;
+
+    /**
+     * @var array|\Closure
+     */
     protected $callback;
 
+    /**
+     * @param Logger $logger
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+     * @param array $config
+     */
     public function __construct(Logger $logger, EventDispatcherInterface $eventDispatcher, array $config)
     {
         $this->logger     = $logger;
@@ -28,6 +56,10 @@ class Rsync
         $this->callback   = null;
     }
 
+    /**
+     * @param string $glue
+     * @return array|string
+     */
     public function getStdout($glue = "\n")
     {
         if (!$glue) {
@@ -37,6 +69,10 @@ class Rsync
         return implode($glue, $this->stdout);
     }
 
+    /**
+     * @param string $glue
+     * @return array|string
+     */
     public function getStderr($glue = "\n")
     {
         if (!$glue) {
@@ -46,6 +82,13 @@ class Rsync
         return implode($glue, $this->stderr);
     }
 
+    /**
+     * @throws \Exception|\InvalidArgumentException
+     * @param array $connection
+     * @param array $rules
+     * @param bool $real
+     * @return array
+     */
     public function run(array $connection, array $rules, $real = false)
     {
         $root = realpath($this->config['root']);
@@ -73,6 +116,11 @@ class Rsync
         return $this->stdout;
     }
 
+    /**
+     * @param string $type
+     * @param string $line
+     * @return void
+     */
     public function onStdLine($type, $line)
     {
         if ('out' == $type) {
@@ -84,6 +132,12 @@ class Rsync
         $this->dispatcher->dispatch(Events::onDeploymentRsyncFeedback, new FeedbackEvent($type, $line));
     }
 
+    /**
+     * @param array $connection
+     * @param array $rules
+     * @param bool $real
+     * @return string
+     */
     protected function buildCommand(array $connection, array $rules, $real = false)
     {
         $source      = '.';

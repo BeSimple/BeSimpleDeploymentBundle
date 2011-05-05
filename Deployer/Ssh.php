@@ -9,14 +9,46 @@ use BeSimple\DeploymentBundle\Events;
 
 class Ssh
 {
+    /**
+     * @var Logger
+     */
     protected $logger;
+
+    /**
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */
     protected $dispatcher;
+
+    /**
+     * @var array
+     */
     protected $config;
+
+    /**
+     * @var resource
+     */
     protected $session;
+
+    /**
+     * @var resource
+     */
     protected $shell;
+
+    /**
+     * @var array
+     */
     protected $stdout;
+
+    /**
+     * @var array
+     */
     protected $stderr;
 
+    /**
+     * @param Logger $logger
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+     * @param array $config
+     */
     public function __construct(Logger $logger, EventDispatcherInterface $eventDispatcher, array $config)
     {
         $this->logger     = $logger;
@@ -29,6 +61,10 @@ class Ssh
         $this->stderr     = array();
     }
 
+    /**
+     * @param string $glue
+     * @return array|string
+     */
     public function getStdout($glue = "\n")
     {
         if (!$glue) {
@@ -38,6 +74,10 @@ class Ssh
         return implode($glue, $this->stdout);
     }
 
+    /**
+     * @param string $glue
+     * @return array|string
+     */
     public function getStderr($glue = "\n")
     {
         if (!$glue) {
@@ -47,6 +87,12 @@ class Ssh
         return implode($glue, $this->stderr);
     }
 
+    /**
+     * @param array $connection
+     * @param array $commands
+     * @param bool $real
+     * @return array
+     */
     public function run(array $connection, array $commands, $real = false)
     {
         $this->connect($connection);
@@ -63,6 +109,11 @@ class Ssh
         return $this->stdout;
     }
 
+    /**
+     * @throws \InvalidArgumentException|\RuntimeException
+     * @param array $connection
+     * @return void
+     */
     protected function connect(array $connection)
     {
         $this->session = ssh2_connect($connection['host'], $connection['ssh_port']);
@@ -91,11 +142,18 @@ class Ssh
         $this->stdin = array();
     }
 
+    /**
+     * @return void
+     */
     protected function disconnect()
     {
         fclose($this->shell);
     }
 
+    /**
+     * @param array $command
+     * @return void
+     */
     protected function execute(array $command)
     {
         $command = $this->buildCommand($command);
@@ -131,6 +189,10 @@ class Ssh
         fclose($errStream);
     }
 
+    /**
+     * @param array $command
+     * @return string
+     */
     protected function buildCommand(array $command)
     {
         if ($command['type'] === 'shell') {

@@ -4,11 +4,31 @@ namespace BeSimple\DeploymentBundle\Deployer;
 
 class Config
 {
+    /**
+     * @var array
+     */
     protected $rules;
+
+    /**
+     * @var array
+     */
     protected $commands;
+
+    /**
+     * @var array
+     */
     protected $servers;
+
+    /**
+     * @var array
+     */
     protected $config;
 
+    /**
+     * @param array $rules
+     * @param array $commands
+     * @param array $servers
+     */
     public function __construct(array $rules, array $commands, array $servers)
     {
         $this->rules = $rules;
@@ -17,11 +37,19 @@ class Config
         $this->config = array();
     }
 
+    /**
+     * @return array
+     */
     public function getServerNames()
     {
         return array_keys($this->servers);
     }
 
+    /**
+     * @throws \InvalidArgumentException
+     * @param string $server
+     * @return array
+     */
     public function getServerConfig($server)
     {
         if (!isset($this->servers[$server])) {
@@ -39,6 +67,10 @@ class Config
         return $this->config[$server];
     }
 
+    /**
+     * @param string $server
+     * @return array
+     */
     protected function getConnectionConfig($server)
     {
         $config = $this->servers[$server];
@@ -47,6 +79,11 @@ class Config
         return $config;
     }
 
+    /**
+     * @throws \InvalidArgumentException
+     * @param string $server
+     * @return array
+     */
     protected function getRulesConfig($server)
     {
         $config = array(
@@ -69,6 +106,11 @@ class Config
         return $config;
     }
 
+    /**
+     * @throws \InvalidArgumentException
+     * @param string $server
+     * @return array
+     */
     protected function getCommandsConfig($server)
     {
         $config = array();

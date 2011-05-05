@@ -26,6 +26,10 @@ class Configuration
         return $treeBuilder->buildTree();
     }
 
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     * @return void
+     */
     protected function addRsyncSection(ArrayNodeDefinition $node)
     {
         $node->children()
@@ -40,6 +44,10 @@ class Configuration
         ;
     }
 
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     * @return void
+     */
     protected function addSshSection(ArrayNodeDefinition $node)
     {
         $node->children()
@@ -51,6 +59,10 @@ class Configuration
         ;
     }
 
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     * @return void
+     */
     protected function addRulesSection(ArrayNodeDefinition $node)
     {
         $node->children()
@@ -64,6 +76,10 @@ class Configuration
         ;
     }
 
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     * @return void
+     */
     protected function addCommandsSection(ArrayNodeDefinition $node)
     {
         $node->children()
@@ -80,6 +96,10 @@ class Configuration
         ;
     }
 
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     * @return void
+     */
     protected function addServersSection(ArrayNodeDefinition $node)
     {
         $node->children()

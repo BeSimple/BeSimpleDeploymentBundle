@@ -10,6 +10,11 @@ use Symfony\Component\Config\FileLocator;
 
 class BeSimpleDeploymentExtension extends Extension
 {
+    /**
+     * @param array $configs
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @return void
+     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();
@@ -26,6 +31,9 @@ class BeSimpleDeploymentExtension extends Extension
         $container->setParameter('be_simple_deployment.config.servers', $config['servers']);
     }
 
+    /**
+     * @return string
+     */
     public function getAlias()
     {
         return 'be_simple_deployment';
