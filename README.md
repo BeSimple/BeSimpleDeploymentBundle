@@ -2,7 +2,7 @@ Symfony2 applications deployment made easy
 ==========================================
 
 
-**Untested bundle, watchout (maybe full of typos)**
+*Up to date thanks to jonaswouters*
 
 
 A few words
@@ -60,7 +60,7 @@ How to install
 
         # app/config.yml
 
-        besimple_deployment:
+        be_simple_deployment:
             rsync:    ~
             ssh:      ~
             rules:    ~
@@ -85,7 +85,7 @@ How to configure
 
 ###An example
 
-    besimple_deployment:
+    be_simple_deployment:
 
         rsync:
             delete:       true
