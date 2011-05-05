@@ -10,7 +10,11 @@ class TestDeploymentCommand extends DeploymentCommand
     protected function configure()
     {
         parent::configure();
-        $this->setName('deployment:test');
+
+        $this
+            ->setName('deployment:test')
+            ->setDescription('Test deployment')
+        ;
     }
 
     protected function executeDeployment(Deployer $deployer, $server)

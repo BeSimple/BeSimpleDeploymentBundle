@@ -10,6 +10,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Bundle\FrameworkBundle\Command\Command as BaseCommand;
+use BeSimple\DeploymentBundle\Events;
+use BeSimple\DeploymentBundle\Event\CommandEvent;
+use BeSimple\DeploymentBundle\Event\DeployerEvent;
+use BeSimple\DeploymentBundle\Event\FeedbackEvent;
 
 abstract class DeploymentCommand extends BaseCommand
 {
@@ -32,50 +36,68 @@ abstract class DeploymentCommand extends BaseCommand
         $this->output = $output;
         $this->output->setDecorated(true);
 
-        //if ($output->getVerbosity() > Output::VERBOSITY_QUIET) {
-            //$eventDispatcher->addListener('besimple_deployment.start', function ($event) use ($that) { $that->write($event, 'start'); });
-            //$eventDispatcher->addListener('besimple_deployment.error', function ($event) use ($that) { $that->write($event, 'error'); });
-            //$eventDispatcher->addListener('besimple_deployment.success', function ($event) use ($that) { $that->write($event, 'success'); });
+        $self = $this;
 
-            //if ($output->getVerbosity() > Output::VERBOSITY_NORMAL) {
-                //$eventDispatcher->addListener('besimple_deployment.rsync', function ($event) use ($that) { $that->write($event, 'rsync'); });
-            //}
+        if ($output->getVerbosity() > Output::VERBOSITY_QUIET) {
 
-            //// TODO: add SSH events
-        //}
+            // Start event
+
+            $eventDispatcher->addListener(Events::onDeploymentStart, function (DeployerEvent $event) use ($self) {
+                $self->write(sprintf(
+                	'Starting %s deployment on server "%s"',
+                    $event->isTest() ? 'test' : 'real',
+                    $event->getServer()
+                ));
+            });
+
+            // Feedback events
+
+            if ($output->getVerbosity() > Output::VERBOSITY_NORMAL) {
+                $eventDispatcher->addListener(Events::onDeploymentRsyncFeedback, function (FeedbackEvent $event) use ($self) {
+                    $self->write(sprintf(
+                        '[Rsync] %s',
+                        $event->getFeedback()
+                    ), $event->isError() ? 'error' : 'comment');
+                });
+
+                $eventDispatcher->addListener(Events::onDeploymentSshFeedback, function (FeedbackEvent $event) use ($self) {
+                    $self->write(sprintf(
+                        '[SSH] %s',
+                        $event->getFeedback()
+                    ), $event->isError() ? 'error' : 'comment');
+                });
+            }
+
+            // Success events
+
+            $eventDispatcher->addListener(Events::onDeploymentSuccess, function (DeployerEvent $event) use ($self) {
+                $self->write(sprintf(
+                	'%s deployment on server "%s" succeded',
+                    $event->isTest() ? 'Test' : 'Real',
+                    $event->getServer()
+                ), 'info');
+            });
+
+            $eventDispatcher->addListener(Events::onDeploymentRsyncSuccess, function (CommandEvent $event) use ($self) {
+                $self->write(sprintf(
+                    '[Rsync success] %s',
+                    $event->getCommand()
+                ));
+            }, 'info');
+
+            $eventDispatcher->addListener(Events::onDeploymentSshSuccess, function (CommandEvent $event) use ($self) {
+                $self->write(sprintf(
+                    '[SSH success] %s',
+                    $event->getCommand()
+                ));
+            }, 'info');
+        }
 
         $this->executeDeployment($deployer, $input->getArgument('server'));
     }
 
-    public function write(EventInterface $event, $type)
+    public function write($message, $style = 'comment')
     {
-        switch ($type) {
-
-            case 'start':
-                $style = 'comment';
-                $message = sprintf(
-                	'Starting %s deployment on server "%s"',
-                    $event->get('real') ? 'real' : 'test',
-                    $event->get('server')
-                );
-                break;
-
-            case 'error':
-                $style = 'error';
-                $message = $event->get('message');
-                break;
-
-            case 'success':
-                $style = 'info';
-                $message = 'Deployment success';
-                break;
-
-            case 'rsync':
-                $style = $event->get('type') === 'out' ? 'info' : 'error';
-                $message = $event->get('line');
-                break;
-        }
-
         $this->output->writeln('<%s>%s</%s>', $style, $message, $style);
     }
 

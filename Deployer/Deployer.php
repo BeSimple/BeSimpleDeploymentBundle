@@ -3,60 +3,51 @@
 namespace BeSimple\DeploymentBundle\Deployer;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use BeSimple\DeploymentBundle\Events;
+use BeSimple\DeploymentBundle\Event\DeployerEvent;
 
 class Deployer
 {
     protected $rsync;
     protected $ssh;
     protected $config;
-    protected $eventDispatcher;
+    protected $dispatcher;
 
     public function __construct(Rsync $rsync, Ssh $ssh, Config $config, EventDispatcherInterface $eventDispatcher)
     {
-        $this->rsync = $rsync;
-        $this->ssh = $ssh;
-        $this->config = $config;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->rsync      = $rsync;
+        $this->ssh        = $ssh;
+        $this->config     = $config;
+        $this->dispatcher = $eventDispatcher;
     }
 
     public function launch($server = null)
     {
-        return $this->call($server, true);
+        $this->deploy($server, true);
     }
 
     public function test($server = null)
     {
-        return $this->call($server, false);
+        $this->deploy($server, false);
     }
 
-    protected function call($server = null, $real = false)
+    protected function deploy($server = null, $real = false)
     {
         if(is_null($server)) {
             foreach($this->config->getServerNames() as $server) {
-                $this->call($server, $real);
+                $this->deploy($server, $real);
             }
 
             return;
         }
 
-        $this->dispatchEvent('start', array('server' => $server, 'real' => $real));
+        $this->dispatcher->dispatch(Events::onDeploymentStart, new DeployerEvent($server, $real));
 
-        try {
-            $config = $this->config->getServerConfig($server);
-            $rsync = $this->rsync->run($config['connection'], $config['rules'], $real);
-            $ssh = $this->ssh->run($config['connection'], $config['commands'], $real);
-        }
+        $config = $this->config->getServerConfig($server);
 
-        catch(\Exception $e) {
-            throw $e;
-            //$this->dispatchEvent('error', array('server' => $server, 'method' => $method, 'exception' => $e));
-        }
+        $this->rsync->run($config['connection'], $config['rules'], $real);
+        $this->ssh->run($config['connection'], $config['commands'], $real);
 
-        //$this->dispatchEvent('success', array('server' => $server, 'real' => $real, 'rsync' => $rsync, 'ssh' => $ssh));
-    }
-
-    protected function dispatchEvent($name, array $parameters)
-    {
-        //$this->eventDispatcher->notify(new Event($this, 'besimple_deployment.'.$name, $parameters));
+        $this->dispatcher->dispatch(Events::onDeploymentSuccess, new DeployerEvent($server, $real));
     }
 }

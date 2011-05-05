@@ -10,7 +10,11 @@ class LaunchDeploymentCommand extends DeploymentCommand
     protected function configure()
     {
         parent::configure();
-        $this->setName('deployment:launch');
+
+        $this
+            ->setName('deployment:launch')
+            ->setDescription('Launch deployment')
+        ;
     }
 
     protected function executeDeployment(Deployer $deployer, $server)

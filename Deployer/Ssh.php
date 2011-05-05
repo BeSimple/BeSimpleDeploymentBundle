@@ -2,25 +2,31 @@
 
 namespace BeSimple\DeploymentBundle\Deployer;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use BeSimple\DeploymentBundle\Event\CommandEvent;
+use BeSimple\DeploymentBundle\Event\FeedbackEvent;
+use BeSimple\DeploymentBundle\Events;
 
 class Ssh
 {
     protected $logger;
-    protected $container;
+    protected $dispatcher;
+    protected $config;
     protected $session;
     protected $shell;
     protected $stdout;
     protected $stderr;
 
-    public function __construct(Logger $logger, ContainerInterface $container)
+    public function __construct(Logger $logger, EventDispatcherInterface $eventDispatcher, array $config)
     {
-        $this->logger = $logger;
-        $this->container = $container;
-        $this->session = null;
-        $this->stdout = array();
-        $this->stdin = array();
-        $this->stderr = array();
+        $this->logger     = $logger;
+        $this->dispatcher = $eventDispatcher;
+        $this->config     = $config;
+        $this->session    = null;
+        $this->shell      = null;
+        $this->stdout     = array();
+        $this->stdin      = array();
+        $this->stderr     = array();
     }
 
     public function getStdout($glue = "\n")
@@ -94,6 +100,8 @@ class Ssh
     {
         $command = $this->buildCommand($command);
 
+        $this->dispatcher->dispatch(Events::onDeploymentSshStart, new CommandEvent($command));
+
         $outStream = ssh2_exec($this->session, $command);
         $errStream = ssh2_fetch_stream($outStream, SSH2_STREAM_STDERR);
 
@@ -103,11 +111,20 @@ class Ssh
         $stdout = explode("\n", stream_get_contents($outStream));
         $stderr = explode("\n", stream_get_contents($errStream));
 
-        //$this->dispatch('command', array('stdout' => stdout, 'stderr' => $stderr));
+        if (count($stdout)) {
+            $this->dispatcher->dispatch(Events::onDeploymentRsyncFeedback, new FeedbackEvent('out', implode("\n", $stdout)));
+        }
+
+        if (count($stdout)) {
+            $this->dispatcher->dispatch(Events::onDeploymentRsyncFeedback, new FeedbackEvent('err', implode("\n", $stderr)));
+        }
 
         $this->stdout = array_merge($this->stdout, $stdout);
+
         if (is_array($stderr)) {
             $this->stderr = array_merge($this->stderr, $stderr);
+        } else {
+            $this->dispatcher->dispatch(Events::onDeploymentSshSuccess, new CommandEvent($command));
         }
 
         fclose($outStream);

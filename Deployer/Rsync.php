@@ -5,11 +5,14 @@ namespace BeSimple\DeploymentBundle\Deployer;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\Process\Process;
+use BeSimple\DeploymentBundle\Event\CommandEvent;
+use BeSimple\DeploymentBundle\Event\FeedbackEvent;
+use BeSimple\DeploymentBundle\Events;
 
 class Rsync
 {
     protected $logger;
-    protected $eventDispatcher;
+    protected $dispatcher;
     protected $config;
     protected $stderr;
     protected $stdout;
@@ -17,12 +20,12 @@ class Rsync
 
     public function __construct(Logger $logger, EventDispatcherInterface $eventDispatcher, array $config)
     {
-        $this->logger = $logger;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->config = $config;
-        $this->stdout = array();
-        $this->stderr = array();
-        $this->callback = null;
+        $this->logger     = $logger;
+        $this->dispatcher = $eventDispatcher;
+        $this->config     = $config;
+        $this->stdout     = array();
+        $this->stderr     = array();
+        $this->callback   = null;
     }
 
     public function getStdout($glue = "\n")
@@ -52,17 +55,20 @@ class Rsync
         }
 
         $command = $this->buildCommand($connection, $rules, $real);
-        echo $command;
         $process = new Process($command, $root);
 
         $this->stderr = array();
         $this->stdout = array();
+
+        $this->dispatcher->dispatch(Events::onDeploymentRsyncStart, new CommandEvent($command));
 
         $code = $process->run(array($this, 'onStdLine'));
 
         if ($code !== 0) {
             throw new \Exception($this->stderr, $process->getExitCode());
         }
+
+        $this->dispatcher->dispatch(Events::onDeploymentRsyncSuccess, new CommandEvent($command));
 
         return $this->stdout;
     }
@@ -75,16 +81,16 @@ class Rsync
             $this->stderr = $line;
         }
 
-        //$this->eventDispatcher->notify(new Event($this, 'besimple_deployer.rsync', array('line' => $line, 'type' => $type)));
+        $this->dispatcher->dispatch(Events::onDeploymentRsyncFeedback, new FeedbackEvent($type, $line));
     }
 
     protected function buildCommand(array $connection, array $rules, $real = false)
     {
-        $source = '.';
-        $user = $connection['username'] ? $connection['username'].'@' : '';
+        $source      = '.';
+        $user        = $connection['username'] ? $connection['username'].'@' : '';
         $destination = sprintf('%s%s:%s', $user, $connection['host'], $connection['path']);
-        $options = array();
-        $options[] = $this->config['options'];
+        $options     = array();
+        $options[]   = $this->config['options'];
 
         if (!empty($connection['port'])) {
             $options[] = '-p '.$connection['port'];

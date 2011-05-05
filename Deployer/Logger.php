@@ -3,7 +3,6 @@
 namespace BeSimple\DeploymentBundle\Deployer;
 
 use Symfony\Component\EventDispatcher\Event;
-use Symfony\Bundle\FrameworkBundle\EventDispatcher;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
