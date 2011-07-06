@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
-use Symfony\Bundle\FrameworkBundle\Command\Command as BaseCommand;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand as BaseCommand;
 use BeSimple\DeploymentBundle\Events;
 use BeSimple\DeploymentBundle\Event\CommandEvent;
 use BeSimple\DeploymentBundle\Event\DeployerEvent;
