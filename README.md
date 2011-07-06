@@ -19,7 +19,7 @@ A few words
 
 ###Links
 
--  Stable releases : [https://github.com/BeSimple/DeploymentBundle](https://github.com/BeSimple/DeploymentBundle)
+-  Stable releases : [https://github.com/besimple/DeploymentBundle](https://github.com/besimple/DeploymentBundle)
 -  Nightly builds : [https://github.com/jfsimon/DeploymentBundle](https://github.com/jfsimon/DeploymentBundle)
 -  Rest documentation : *will come later*
 
@@ -38,11 +38,11 @@ How to install
 
     - Use clone method if not using GIT for your project
 
-        git clone git://github.com/BeSimple/DeploymentBundle.git vendor/BeSimple/DeploymentBundle
+        git clone git://github.com/besimple/DeploymentBundle.git vendor/BeSimple/DeploymentBundle
 
     - Use submodule method if this is the case
 
-        git submodule add git://github.com/BeSimple/DeploymentBundle.git vendor/BeSimple/DeploymentBundle
+        git submodule add git://github.com/besimple/DeploymentBundle.git vendor/BeSimple/DeploymentBundle
 
 
 2.  Register bundle in `AppKernel` class
