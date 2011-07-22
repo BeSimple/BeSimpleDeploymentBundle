@@ -13,35 +13,39 @@ class SshProcess extends AbstractProtocol implements ShellInterface
 {
     public function execute(Server $server, array $commands)
     {
-        $this->connect($server);
+        $this->startSession();
 
         $ok = true;
         foreach ($commands as $command) {
-            if (!$this->executeProcess($command)) {
+            if (!$this->executeProcess($this->buildCommand($server, $command))) {
                 $ok = false;
             }
         }
 
-        $this->disconnect();
-
         return $ok;
     }
 
-    protected function connect(Server $server)
+    protected function buildCommand(Server $server, $command)
     {
-        $this->startSession();
-
         if ($server->getSshIdentity()->hasKey()) {
-            $command = '';
+            return sprintf(
+                'ssh %s@%s:%s -i %s -i %s %s',
+                $server->getSshIdentity()->getUser(),
+                $server->getHost(),
+                $server->getSshPort(),
+                $server->getSshIdentity()->getPrivateKeyFile(),
+                $server->getSshIdentity()->getPublicKeyFile(),
+                $command
+            );
         } else {
-            $command = '';
+            return sprintf(
+                'spawn ssh %s@%s:%s %s; expect "*?assword:*"; send -- "%s\n"',
+                $server->getSshIdentity()->getUser(),
+                $server->getHost(),
+                $server->getSshPort(),
+                $command,
+                $server->getSshIdentity()->getPassword()
+            );
         }
-
-        return $this->executeProcess($command);
-    }
-
-    protected function disconnect()
-    {
-        return $this->executeProcess('exit');
     }
 }
