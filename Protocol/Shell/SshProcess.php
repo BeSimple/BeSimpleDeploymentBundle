@@ -4,14 +4,14 @@ namespace BeSimple\DeploymentBundle\Protocol\Shell;
 
 use BeSimple\DeploymentBundle\Protocol\AbstractProtocol;
 use BeSimple\DeploymentBundle\Model\Server;
-use BeSimple\DeploymentBundle\Model\Command;
+use BeSimple\DeploymentBundle\Model\Commands;
 
 /**
  * @author: Jean-François Simon <contact@jfsimon.fr>
  */
 class SshProcess extends AbstractProtocol implements ShellInterface
 {
-    public function execute(Server $server, array $commands)
+    public function execute(Server $server, Commands $commands)
     {
         $this->startSession();
 

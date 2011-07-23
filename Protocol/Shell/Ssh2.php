@@ -4,17 +4,17 @@ namespace BeSimple\DeploymentBundle\Protocol\Shell;
 
 use BeSimple\DeploymentBundle\Protocol\AbstractProtocol;
 use BeSimple\DeploymentBundle\Model\Server;
-use BeSimple\DeploymentBundle\Model\Command;
+use BeSimple\DeploymentBundle\Model\Commands;
 use BeSimple\DeploymentBundle\Model\Identity;
-use BeSimple\DeploymentBundle\Exceptions\ConnectionException;
-use BeSimple\DeploymentBundle\Exceptions\AuthenticationException;
+use BeSimple\DeploymentBundle\Protocol\Exceptions\ConnectionException;
+use BeSimple\DeploymentBundle\Protocol\Exceptions\AuthenticationException;
 
 /**
  * @author: Jean-François Simon <contact@jfsimon.fr>
  */
 class Ssh2 extends AbstractProtocol implements ShellInterface
 {
-    public function execute(Server $server, array $commands)
+    public function execute(Server $server, Commands $commands)
     {
         list($session, $shell) = $this->connect($server);
 

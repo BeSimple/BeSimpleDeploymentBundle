@@ -1,6 +1,6 @@
 <?php
 
-namespace BeSimple\DeploymentBundle\Exceptions;
+namespace BeSimple\DeploymentBundle\Protocol\Exceptions;
 
 use BeSimple\DeploymentBundle\Protocol\ProtocolInterface;
 use BeSimple\DeploymentBundle\Model\Identity;
