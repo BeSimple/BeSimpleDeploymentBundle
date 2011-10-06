@@ -111,7 +111,7 @@ abstract class DeploymentCommand extends BaseCommand
      */
     public function write($message, $style = 'comment')
     {
-        $this->output->writeln(sprintf('<%s>%s</%s>', $style, $message, $style), $style);
+        $this->output->writeln(sprintf('<%s>%s</%s>', $style, $message, $style));
     }
 
     /**
