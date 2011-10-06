@@ -80,7 +80,9 @@ class Deployer
         $config = $this->config->getServerConfig($server);
 
         $this->rsync->run($config['connection'], $config['rules'], $real);
-        $this->ssh->run($config['connection'], $config['commands'], $real);
+        if(false === empty($config['commands'])){
+            $this->ssh->run($config['connection'], $config['commands'], $real);
+        }
 
         $this->dispatcher->dispatch(Events::onDeploymentSuccess, new DeployerEvent($server, $real));
     }
