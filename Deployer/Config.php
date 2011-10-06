@@ -87,8 +87,8 @@ class Config
     protected function getRulesConfig($server)
     {
         $config = array(
-        	'ignore' => array(),
-        	'force' => array()
+            'ignore' => array(),
+            'force' => array()
         );
 
         $parameters = array_keys($config);
