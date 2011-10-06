@@ -126,16 +126,5 @@ class Configuration
                 ->end()
             ->end()
         ;
-
-
-/*->prototype('array')
-                    ->children()
-                    ->arrayNode('ignore')
-                        ->useAttributeAsKey('ignore')->prototype('scalar')->end()
-                    ->end()
-                    ->arrayNode('force')
-                        ->useAttributeAsKey('force')->prototype('scalar')->end()
-                    ->end()
-                    ->end()*/
     }
 }
