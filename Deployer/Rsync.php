@@ -155,17 +155,17 @@ class Rsync
         }
 
         if (count($rules)) {
-            $options[] = "--filter='+ *'";
-
             foreach ($rules['ignore'] as $mask) {
-                $options[] = sprintf('-f -%s', $mask);
+                $options[] = sprintf('--exclude="%s"', $mask);
             }
 
             foreach ($rules['force'] as $mask) {
-                $options[] = sprintf('-f +%s', $mask);
+                $options[] = sprintf('--include="%s"', $mask);
             }
         }
 
-        return sprintf('%s -e ssh %s %s %s', $this->config['command'], implode(' ', $options), $source, $destination);
+        $strReal = $real ? '' : '--dry-run';
+
+        return sprintf('%s -e ssh %s %s %s %s', $this->config['command'], $strReal, implode(' ', $options), $source, $destination);
     }
 }
