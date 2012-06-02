@@ -1,0 +1,26 @@
+{
+    "name": "besimple/deployment-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony2 application deployment made easy",
+    "keywords": ["deploy", "rsync", "ssh"],
+    "homepage": "https://github.com/BeSimple/BeSimpleDeploymentBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jean-François Simon",
+            "email": "contact@jfsimon.fr"
+        },
+        {
+            "name": "BeSimple Community",
+            "homepage": "https://github.com/BeSimple/BeSimpleDeploymentBundle/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "symfony/framework-bundle": "2.*"
+    },
+    "autoload": {
+        "psr-0": { "BeSimple\\DeploymentBundle": "" }
+    },
+    "target-dir" : "BeSimple/DeploymentBundle"
+}
