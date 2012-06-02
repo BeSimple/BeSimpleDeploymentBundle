@@ -34,18 +34,25 @@ How to install
 --------------
 
 
-1.  Get the sources via GIT
+### Get the sources
 
-    - Use clone method if not using GIT for your project
+Use Composer method if available
 
-        git clone git://github.com/besimple/DeploymentBundle.git vendor/BeSimple/DeploymentBundle
+    // composer.json
+    "require": {
+        "besimple/deployment-bundle": "dev-master"
+    },
 
-    - Use submodule method if this is the case
+Use submodule method if using GIT but not Composer
 
-        git submodule add git://github.com/besimple/DeploymentBundle.git vendor/BeSimple/DeploymentBundle
+    git submodule add git://github.com/besimple/DeploymentBundle.git vendor/BeSimple/DeploymentBundle
+
+Use clone method if otherwise
+
+    git clone git://github.com/besimple/DeploymentBundle.git vendor/BeSimple/DeploymentBundle
 
 
-2.  Register bundle in `AppKernel` class
+### Register bundle in `AppKernel` class
 
         // app/AppKernel.php
 
@@ -56,7 +63,7 @@ How to install
         );
 
 
-3.  Add `besimple_deployment` entry to your config file
+### Add `besimple_deployment` entry to your config file
 
         # app/config.yml
 
@@ -68,7 +75,8 @@ How to install
             servers:  ~
 
 
-4.  Add `BeSimple` namespace to autoload
+### Add `BeSimple` namespace to autoload
+This step can be skipped if using Composer.
 
         // app/autoload.php
 
