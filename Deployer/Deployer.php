@@ -67,12 +67,10 @@ class Deployer
      */
     protected function deploy($server = null, $real = false)
     {
-        if(is_null($server)) {
-            foreach($this->config->getServerNames() as $server) {
-                $this->deploy($server, $real);
-            }
-
-            return;
+        if(is_null($server)){
+            $serverNames = $this->config->getServerNames();
+            reset($serverNames);
+            return $this->deploy(current($serverNames));
         }
 
         $this->dispatcher->dispatch(Events::onDeploymentStart, new DeployerEvent($server, $real));
