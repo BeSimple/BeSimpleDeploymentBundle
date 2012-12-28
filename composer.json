@@ -1,0 +1,27 @@
+{
+    "name":         "ibrows/be-simple-deployment-bundle",
+    "description":  "Symfony2 applications deployment made easy",
+    "keywords":     ["ibrows", "deployment", "deploy"],
+    "type":         "symfony-bundle",
+    "license":      "MIT",
+    "authors": [
+        {
+            "name":     "Mike Meier",
+            "email":    "mike.meier@ibrows.ch"
+        }
+    ],
+
+    "require": {
+        "php": ">=5.3.0",
+        "symfony/console": "2.1.*",
+        "symfony/framework-bundle": ">=2.0,<2.2-dev"
+    },
+
+    "autoload": {
+        "psr-0": { "BeSimple\\DeploymentBundle": "" }
+    },
+
+    "target-dir": "BeSimple/DeploymentBundle",
+
+    "minimum-stability": "dev"
+}
