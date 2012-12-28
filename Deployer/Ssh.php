@@ -187,7 +187,7 @@ class Ssh
                 return $command['command'];
             break;
             case 'symfony':
-                return sprintf('cd %s && %s %s --env=%s', $connection['path'], $connection['symfony_command'], $command['command'], $command['env']);
+                return sprintf('cd %s && %s %s', $connection['path'], $connection['symfony_command'], $command['command']);
             break;
         }
 

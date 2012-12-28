@@ -121,7 +121,6 @@ class Configuration
             ->prototype('array')->children()
                 ->scalarNode('type')->defaultValue('symfony')->end()
                 ->scalarNode('command')->isRequired()->cannotBeEmpty()->end()
-                ->scalarNode('env')->defaultValue('dev')->end()
             ->end()
         ;
     }
