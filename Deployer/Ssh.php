@@ -96,15 +96,12 @@ class Ssh
     public function run(array $connection, array $commands, $real = false)
     {
         $this->connect($connection);
-        $this->execute(array('type' => 'shell', 'command' => sprintf('cd %s', $connection['path'])));
 
-        if ($real) {
-            foreach ($commands as $command) {
-                $this->execute($command);
+        if($real){
+            foreach($commands as $command){
+                $this->execute($command, $connection);
             }
         }
-
-        $this->disconnect();
 
         return $this->stdout;
     }
@@ -116,26 +113,28 @@ class Ssh
      */
     protected function connect(array $connection)
     {
-        $this->session = ssh2_connect($connection['host'], $connection['ssh_port']);
+        $methods = @$connection['connect_methods'] ?: @$this->config['connect_methods'];
 
+        $this->session = @ssh2_connect($connection['host'], $connection['ssh_port'], $methods);
         if (!$this->session) {
             throw new \InvalidArgumentException(sprintf('SSH connection failed on "%s:%s"', $connection['host'], $connection['ssh_port']));
         }
 
-        if (isset($connection['username']) && isset($connection['pubkey_file']) && isset($connection['privkey_file'])) {
-            if (!ssh2_auth_pubkey_file($connection['username'], $connection['pubkey_file'], $connection['privkey_file'], $connection['passphrase'])) {
-                throw new \InvalidArgumentException(sprintf('SSH authentication failed for user "%s" with public key "%s"', $connection['username'], $connection['pubkey_file']));
-            }
-        } else if ($connection['username'] && $connection['password']) {
-            if (!ssh2_auth_password($this->session, $connection['username'], $connection['password'])) {
-                throw new \InvalidArgumentException(sprintf('SSH authentication failed for user "%s"', $connection['username']));
-            }
-        }
+        $username = @$connection['username'] ?: @$this->config['username'];
+        $password = @$connection['password'] ?: @$this->config['password'];
 
-        $this->shell = ssh2_shell($this->session);
+        if($username && $password){
+            if(!ssh2_auth_password($this->session, $username, $password)){
+                throw new \InvalidArgumentException(sprintf('SSH authentication failed for user "%s"', $username));
+            }
+        }elseif($username){
+            $pubkey     = @$connection['pubkey_file'] ?: @$this->config['pubkey_file'];
+            $privkey    = @$connection['privkey_file'] ?: @$this->config['privkey_file'];
+            $passphrase = @$connection['passphrase'] ?: @$this->config['passphrase'];
 
-        if (!$this->shell) {
-            throw new \RuntimeException(sprintf('Failed opening "%s" shell', $this->config['shell']));
+            if(!ssh2_auth_pubkey_file($this->session, $username, $pubkey, $privkey, $passphrase)){
+                throw new \InvalidArgumentException(sprintf('SSH authentication failed for user "%s" with public key "%s"', $username, $pubkey));
+            }
         }
 
         $this->stdout = array();
@@ -143,45 +142,33 @@ class Ssh
     }
 
     /**
-     * @return void
-     */
-    protected function disconnect()
-    {
-        fclose($this->shell);
-    }
-
-    /**
      * @param array $command
-     * @return void
+     * @param array $connection
      */
-    protected function execute(array $command)
+    protected function execute(array $command, array $connection)
     {
-        $command = $this->buildCommand($command);
+        $command = $this->buildCommand($command, $connection);
 
         $this->dispatcher->dispatch(Events::onDeploymentSshStart, new CommandEvent($command));
 
-        $outStream = ssh2_exec($this->session, $command);
+        $outStream = ssh2_exec($this->session, $command, "xterm");
         $errStream = ssh2_fetch_stream($outStream, SSH2_STREAM_STDERR);
 
         stream_set_blocking($outStream, true);
         stream_set_blocking($errStream, true);
 
-        $stdout = explode("\n", stream_get_contents($outStream));
-        $stderr = explode("\n", stream_get_contents($errStream));
+        $stdout = stream_get_contents($outStream);
+        $stderr = stream_get_contents($errStream);
 
-        if (count($stdout)) {
-            $this->dispatcher->dispatch(Events::onDeploymentRsyncFeedback, new FeedbackEvent('out', implode("\n", $stdout)));
+        if($stdout){
+            $this->dispatcher->dispatch(Events::onDeploymentSshFeedback, new FeedbackEvent('out', $stdout));
         }
 
-        if (count($stdout)) {
-            $this->dispatcher->dispatch(Events::onDeploymentRsyncFeedback, new FeedbackEvent('err', implode("\n", $stderr)));
+        if($stderr){
+            $this->dispatcher->dispatch(Events::onDeploymentSshFeedback, new FeedbackEvent('err', $stderr));
         }
 
-        $this->stdout = array_merge($this->stdout, $stdout);
-
-        if (is_array($stderr)) {
-            $this->stderr = array_merge($this->stderr, $stderr);
-        } else {
+        if(!$stderr){
             $this->dispatcher->dispatch(Events::onDeploymentSshSuccess, new CommandEvent($command));
         }
 
@@ -193,15 +180,17 @@ class Ssh
      * @param array $command
      * @return string
      */
-    protected function buildCommand(array $command)
+    protected function buildCommand(array $command, array $connection)
     {
-        if ($command['type'] === 'shell') {
-            return $command['command'];
+        switch($command['type']){
+            case 'shell':
+                return $command['command'];
+            break;
+            case 'symfony':
+                return sprintf('cd %s && %s %s --env=%s', $connection['path'], $connection['symfony_command'], $command['command'], $command['env']);
+            break;
         }
 
-        $symfony = $this->config['symfony_command'];
-        $env = $command['env'] ?: $this->env;
-
-        return sprintf('%s %s --env="%s"', $symfony, $command['command'], $env);
+        throw new \InvalidArgumentException(sprintf('CommandType "%s" invalid', $command['type']));
     }
 }
