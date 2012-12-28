@@ -37,7 +37,6 @@ How to install
 
         git submodule add git://github.com/besimple/DeploymentBundle.git vendor/BeSimple/DeploymentBundle
 
-
 2.  Register bundle in `AppKernel` class
 
         // app/AppKernel.php
@@ -47,7 +46,6 @@ How to install
             new BeSimple\DeploymentBundle\BeSimpleDeploymentBundle(),
             // ...
         );
-
 
 3.  Add `besimple_deployment` entry to your config file
 
@@ -60,7 +58,6 @@ How to install
             commands: ~
             servers:  ~
 
-
 4.  Add `BeSimple` namespace to autoload
 
         // app/autoload.php
@@ -70,7 +67,6 @@ How to install
             'BeSimple' => __DIR__.'/../vendor',
             // ...
         ));
-
 
 How to configure
 ----------------
@@ -176,13 +172,11 @@ You can connect many events to know what's happening.
 -  **onDeploymentStart**   : fired on deployment start.
 -  **onDeploymentSuccess** : fired on deployment success.
 
-
 ###Rsync events
 
 -  **onDeploymentRsyncStart**    : fired when rsync is started.
 -  **onDeploymentRsyncFeedback** : fired on each rsync `stdout` or `stderr` line.
 -  **onDeploymentRsyncSuccess**  : fired on rsync success.
-
 
 ###SSH events
 
