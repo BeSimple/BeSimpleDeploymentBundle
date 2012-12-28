@@ -144,7 +144,6 @@ How to configure
 How to use
 ----------
 
-
 ###Using the commands
 
 The simpliest way to deploy your application is to use the command line,
