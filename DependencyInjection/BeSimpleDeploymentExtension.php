@@ -24,11 +24,11 @@ class BeSimpleDeploymentExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('deployment.xml');
 
-        $container->setParameter('be_simple_deployment.config.rsync', $config['rsync']);
-        $container->setParameter('be_simple_deployment.config.ssh', $config['rsync']);
-        $container->setParameter('be_simple_deployment.config.rules', $config['rules']);
-        $container->setParameter('be_simple_deployment.config.commands', $config['commands']);
-        $container->setParameter('be_simple_deployment.config.servers', $config['servers']);
+        $container->setParameter('be_simple_deployment.config.rsync', isset($config['rsync']) ? $config['rsync'] : array());
+        $container->setParameter('be_simple_deployment.config.ssh', isset($config['ssh']) ? $config['ssh'] : array());
+        $container->setParameter('be_simple_deployment.config.rules', isset($config['rules']) ? $config['rules'] : array());
+        $container->setParameter('be_simple_deployment.config.commands', isset($config['commands']) ? $config['commands'] : array());
+        $container->setParameter('be_simple_deployment.config.servers', isset($config['servers']) ? $config['servers'] : array());
     }
 
     /**
