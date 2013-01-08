@@ -58,6 +58,13 @@ abstract class DeploymentCommand extends BaseCommand
                 ));
             });
 
+            $eventDispatcher->addListener(Events::onDeploymentSshStart, function (CommandEvent $event) use ($self) {
+                $self->write(sprintf(
+                    '[Try SSH Command] %s',
+                    $event->getCommand()
+                ));
+            });
+
             // Feedback events
 
             if ($output->getVerbosity() > Output::VERBOSITY_NORMAL) {
