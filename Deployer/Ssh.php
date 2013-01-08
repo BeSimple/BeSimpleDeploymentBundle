@@ -148,8 +148,6 @@ class Ssh
     protected function execute(array $command, array $connection)
     {
         $command = $this->buildCommand($command, $connection);
-        $this->dispatcher->dispatch(Events::onDeploymentSshFeedback, new FeedbackEvent('out', 'Trying: '. $command));
-
         $this->dispatcher->dispatch(Events::onDeploymentSshStart, new CommandEvent($command));
 
         $outStream = ssh2_exec($this->session, $command, "xterm");
