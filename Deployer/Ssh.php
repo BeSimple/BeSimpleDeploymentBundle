@@ -142,15 +142,15 @@ class Ssh
     }
 
     /**
-     * @param array $command
+     * @param array $commandArray
      * @param array $connection
      */
-    protected function execute(array $command, array $connection)
+    protected function execute(array $commandArray, array $connection)
     {
-        $command = $this->buildCommand($command, $connection);
+        $command = $this->buildCommand($commandArray, $connection);
         $this->dispatcher->dispatch(Events::onDeploymentSshStart, new CommandEvent($command));
 
-        $outStream = ssh2_exec($this->session, $command, "xterm");
+        $outStream = ssh2_exec($this->session, $command);
         $errStream = ssh2_fetch_stream($outStream, SSH2_STREAM_STDERR);
 
         stream_set_blocking($outStream, true);
@@ -176,20 +176,27 @@ class Ssh
     }
 
     /**
-     * @param array $command
+     * @param array $commandArray
+     * @param array $connection
      * @return string
+     * @throws \InvalidArgumentException
      */
-    protected function buildCommand(array $command, array $connection)
+    protected function buildCommand(array $commandArray, array $connection)
     {
-        switch($command['type']){
+        $envs = '';
+        foreach($commandArray['env'] as $key => $value){
+            $envs .= 'declare -x '.$key.'='.$value.' && ';
+        }
+
+        switch($commandArray['type']){
             case 'shell':
-                return $command['command'];
+                return sprintf("%s%s", $envs, $commandArray['command']);
             break;
             case 'symfony':
-                return sprintf('cd %s && %s %s', $connection['path'], $connection['symfony_command'], $command['command']);
+                return sprintf('%scd %s && %s %s', $envs, $connection['path'], $connection['symfony_command'], $commandArray['command']);
             break;
         }
 
-        throw new \InvalidArgumentException(sprintf('CommandType "%s" invalid', $command['type']));
+        throw new \InvalidArgumentException(sprintf('CommandType "%s" invalid', $commandArray['type']));
     }
 }
