@@ -17,5 +17,6 @@
     "autoload": {
         "psr-0": { "BeSimple\\DeploymentBundle": "" }
     },
+    "target-dir": "BeSimple/DeploymentBundle",
     "minimum-stability": "dev"
 }
