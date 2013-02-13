@@ -99,6 +99,7 @@ class Rsync
 
         $command = $this->buildCommand($connection, $rules, $real);
         $process = new Process($command, $root);
+        $process->setTimeout(120);
 
         $this->stderr = array();
         $this->stdout = array();
