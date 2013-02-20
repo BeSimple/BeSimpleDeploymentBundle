@@ -4,7 +4,6 @@
     "keywords":     ["ibrows", "deployment", "deploy"],
     "type":         "symfony-bundle",
     "license":      "MIT",
-    "version":      "1.0.0",
     "authors": [
         {
             "name":     "Mike Meier",
