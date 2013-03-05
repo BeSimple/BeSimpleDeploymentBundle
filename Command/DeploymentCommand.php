@@ -27,6 +27,7 @@ abstract class DeploymentCommand extends BaseCommand
         $this
             ->setDefinition(array(
                 new InputArgument('server', InputArgument::OPTIONAL, 'The target server name', null),
+                new InputOption('tag', 't', InputOption::VALUE_NONE, 'Tag with git if real deployment')
             ))
         ;
     }
@@ -92,6 +93,49 @@ abstract class DeploymentCommand extends BaseCommand
                     $event->getServer()
                 ), 'info');
             });
+
+            if($input->getOption('tag')){
+                $eventDispatcher->addListener(Events::onDeploymentSuccess, function (DeployerEvent $event) use ($self) {
+                    if(!$event->isTest()){
+                        $path = realpath($this->getApplication()->getKernel()->getRootDir().'/..');
+                        if(is_dir($path)){
+                            $tag = 'deploy-'. strtolower($event->getServer());
+
+                            $self->write(sprintf(
+                                'Trying to set GIT tag %s in %s',
+                                $tag,
+                                $path
+                            ), 'comment');
+
+                            $gitCmd = sprintf(
+                                'git --git-dir=%s --work-tree=%s',
+                                $path.'/.git',
+                                $path
+                            );
+
+                            $status = shell_exec($gitCmd.' status -s');
+                            if($status !== null){
+                                $self->write(sprintf('There are uncommitted changes - wont set the tag: %s', $status), 'error');
+                                return;
+                            }
+
+                            $commit = shell_exec($gitCmd.' rev-parse HEAD');
+                            if(!$commit){
+                                $self->write('Last commit-hash not found for HEAD', 'error');
+                                return;
+                            }
+
+                            $tagResult  = shell_exec($gitCmd.' tag -f '. $tag .' '. $commit);
+                            if(!$tagResult){
+                                $self->write('Tagging seems ok. Try "git push --tags"', 'info');
+                                return;
+                            }
+
+                            $self->write($tagResult, 'info');
+                        }
+                    }
+                });
+            }
 
             $eventDispatcher->addListener(Events::onDeploymentRsyncSuccess, function (CommandEvent $event) use ($self) {
                 $self->write(sprintf(
