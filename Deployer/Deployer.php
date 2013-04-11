@@ -70,7 +70,7 @@ class Deployer
         if(is_null($server)){
             $serverNames = $this->config->getServerNames();
             reset($serverNames);
-            return $this->deploy(current($serverNames));
+            return $this->deploy(current($serverNames), $real);
         }
 
         $this->dispatcher->dispatch(Events::onDeploymentStart, new DeployerEvent($server, $real));
