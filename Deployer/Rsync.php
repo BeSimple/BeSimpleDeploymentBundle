@@ -99,7 +99,7 @@ class Rsync
 
         $command = $this->buildCommand($connection, $rules, $real);
         $process = new Process($command, $root);
-        $process->setTimeout(120);
+        $process->setTimeout($this->config['timeout']);
 
         $this->stderr = array();
         $this->stdout = array();
@@ -150,7 +150,7 @@ class Rsync
         if (!empty($connection['port'])) {
             $options[] = '-p '.$connection['port'];
         }
-        
+
         if($connection['ssh_port']!=22) {
             $options[] = sprintf('--rsh="ssh -p%d"', $connection['ssh_port']);
         }

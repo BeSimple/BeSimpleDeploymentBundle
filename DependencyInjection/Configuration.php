@@ -39,6 +39,7 @@ class Configuration
                     ->scalarNode('command')->defaultValue('rsync')->cannotBeEmpty()->end()
                     ->booleanNode('delete')->defaultFalse()->end()
                     ->scalarNode('options')->defaultValue('-Cva')->end()
+                    ->scalarNode('timeout')->defaultValue(120)->end()
                     ->scalarNode('root')->defaultValue('%kernel.root_dir%/..')->cannotBeEmpty()->end()
                 ->end()
         ;
