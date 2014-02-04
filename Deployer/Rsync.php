@@ -146,8 +146,12 @@ class Rsync
         $options     = array();
         $options[]   = $this->config['options'];
 
-        if (!empty($connection['port'])) {
-            $options[] = '-p '.$connection['port'];
+        if (!empty($connection['rsync_port'])) {
+            $options[] = '-p '.$connection['rsync_port'];
+        }
+        
+        if ($connection['ssh_port'] != 22) {
+            $options[] = sprintf('--rsh="ssh -p%d"', $connection['ssh_port']);
         }
 
         if ($this->config['delete']) {
