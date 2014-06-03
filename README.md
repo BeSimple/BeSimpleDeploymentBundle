@@ -1,13 +1,10 @@
 Symfony2 applications deployment made easy
 ==========================================
 
-
 *Up to date thanks to jonaswouters*
-
 
 A few words
 -----------
-
 
 ###Description
 
@@ -16,23 +13,19 @@ A few words
 -  Easily create rules for rsync (ignore / force files).
 -  Schedule commands to run on ditant server via ssh (SSH2 PHP extension required).
 
-
 ###Links
 
 -  Stable releases : [https://github.com/besimple/DeploymentBundle](https://github.com/besimple/DeploymentBundle)
 -  Nightly builds : [https://github.com/jfsimon/DeploymentBundle](https://github.com/jfsimon/DeploymentBundle)
 -  Rest documentation : *will come later*
 
-
 ###Requirements
 
 -  Rsync package : [http://samba.anu.edu.au/rsync/](http://samba.anu.edu.au/rsync/)
 -  SSH2 extension : [http://fr.php.net/manual/en/book.ssh2.php](http://fr.php.net/manual/en/book.ssh2.php)
 
-
 How to install
 --------------
-
 
 1.  Get the sources via GIT
 
@@ -44,7 +37,6 @@ How to install
 
         git submodule add git://github.com/besimple/DeploymentBundle.git vendor/BeSimple/DeploymentBundle
 
-
 2.  Register bundle in `AppKernel` class
 
         // app/AppKernel.php
@@ -54,7 +46,6 @@ How to install
             new BeSimple\DeploymentBundle\BeSimpleDeploymentBundle(),
             // ...
         );
-
 
 3.  Add `besimple_deployment` entry to your config file
 
@@ -67,7 +58,6 @@ How to install
             commands: ~
             servers:  ~
 
-
 4.  Add `BeSimple` namespace to autoload
 
         // app/autoload.php
@@ -78,87 +68,77 @@ How to install
             // ...
         ));
 
-
 How to configure
 ----------------
-
 
 ###An example
 
     be_simple_deployment:
+      rsync:
+        delete:     true
+      rules:
+        eclipse:
+          ignore:   [.settings, .buildpath, .project]
+        netbeans:
+          ignore:   [nbproject]
+        phpstorm:
+          ignore:   [.idea]
+        git:
+          ignore:   [.git, .git*]
+        svn:
+          ignore:   [.svn]
+        symfony:
+          ignore:   [/app/cache/*, /app/logs/*, /app/config/parameters.yml, /web/bundles/*, /web/uploads/*, /web/js/*, /web/css/*]
+        hosting:
+          ignore:   [/.htaccess, /.htpasswd, /web/.htaccess, /web/.user.ini, /web/manage.php, /web/phpinfo.php, /web/ntunnel_mysql.php]
+        system:
+          ignore:   [._*, .DS_Store]
+      commands:
+        cache_clear:
+          type:     symfony
+          command:  cache:clear
+        assetic_dump:
+          type:     symfony
+          command:  assetic:dump
+        assets_install:
+          type:     symfony
+          command:  assets:install
+      ssh:
+        connect_methods:
+          server_to_client:
+             crypt: rijndael-cbc@lysator.liu.se, aes256-cbc, aes192-cbc, aes128-cbc, 3des-cbc, blowfish-cbc, cast128-cbc, arcfour
+          client_to_server:
+             crypt: rijndael-cbc@lysator.liu.se, aes256-cbc, aes192-cbc, aes128-cbc, 3des-cbc, blowfish-cbc, cast128-cbc, arcfour
+      servers:
+        dev:
+          host:         dev.server.ch
+          username:     username
 
-        rsync:
-            delete:       true
+          pubkey_file:  %deploy_dev_pubkey_file%
+          privkey_file: %deploy_dev_privkey_file%
+          passphrase:   %deploy_dev_passphrase%
 
-        ssh:
-            pubkey_file:  /home/me/.ssh/id_rsa.pub
-            privkey_file: /home/me/.ssh/id_rsa
-            passwphrase:  secret
+          path:         /home/user/www/dev.project.com/
+          rules:        [eclipse, netbeans, phpstorm, git, svn, symfony, hosting, system]
+          commands:     [cache_clear, assetic_dump, assets_install]
 
-        rules:
-            eclipse:
-                ignore:   [.settings, .buildpath, .project]
-            git:
-                ignore:   [.git, .git*, .svn]
-            symfony:
-                ignore:   [/app/logs/*, /app/cache/*, /web/uploads/*, /web/*_dev.php]
+          symfony_command: php -c web/.user.ini app/console --env=dev
+        prod:
+          host:         prod.server.ch
+          username:     username
 
-        commands:
-            cache_warmup:
-                type:     symfony
-                command:  cache:warmup
-            fix_perms:
-                type:     shell
-                command:  ./bin/fix_perms.sh
+          pubkey_file:  %deploy_prod_pubkey_file%
+          privkey_file: %deploy_prod_privkey_file%
+          passphrase:   %deploy_prod_passphrase%
 
-        servers:
-            staging:
-                host:     localhost
-                username: login
-                password: passwd
-                path:     /path/to/project
-                rules:    [eclipse, symfony]
-                commands: [cache_warmup, fix_perms]
-            production:
-                # ...
+          path:         /home/user/www/prod.project.com/
+          rules:        [eclipse, netbeans, phpstorm, git, svn, symfony, hosting, system]
+          commands:     [cache_clear_dev, assetic_dump, assets_install]
 
-
-###Rsync configuration
-
-To be continued.
-
-
-###SSH configuration
-
-To be continued.
-
-
-###Rules configuration
-
-Rules can be declared as templates for reuse in your servers configuration.
-Some templates are already bundled by default. The following parameters can be used :
-
--  ignore : masks for the files to be ignored
--  force : ignored files can be forced this way
-
-
-###Servers configuration
-
-Here is the full list of parameters :
-
--  host :
--  rsync_port :
--  ssh_port :
--  username
--  password :
--  path : the path for your application root on the remote server
--  rules : list of rules templates to apply
--  commands : list of commands to trigger on destination server
-
+          symfony_command: php -c web/.user.ini app/console --env=prod
 
 How to use
 ----------
-
 
 ###Using the commands
 
@@ -173,7 +153,6 @@ go into your project root folder and type the following commands :
 
 You can use the verbose option (`-v`) to get all feedback from rsync and
 remote ssh commands.
-
 
 ###Using the service
 
@@ -193,13 +172,11 @@ You can connect many events to know what's happening.
 -  **onDeploymentStart**   : fired on deployment start.
 -  **onDeploymentSuccess** : fired on deployment success.
 
-
 ###Rsync events
 
 -  **onDeploymentRsyncStart**    : fired when rsync is started.
 -  **onDeploymentRsyncFeedback** : fired on each rsync `stdout` or `stderr` line.
 -  **onDeploymentRsyncSuccess**  : fired on rsync success.
-
 
 ###SSH events
 
